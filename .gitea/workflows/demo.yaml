@@ -15,5 +15,5 @@ jobs:
       - run: echo $(pwd)
       - run: python3 -V
       - run: python3 -m venv venv
-      - run: source venv/bin/activate && pip install -r requirements.txt
+      - run: source venv/bin/activate && pip install -r deal/requirements.txt
       - run: echo "🔎 The name of your branch is ${{ gitea.ref }} and your repository is ${{ gitea.repository }}."
