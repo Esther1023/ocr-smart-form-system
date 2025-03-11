@@ -10,7 +10,7 @@ jobs:
       - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by Gitea!"
       - run: git clone https://git.home.lewwen.top/liwenwen/deal.git
       - run: ls -al
-      - run: cd deal
+      - run: cd deal && ls -al
       - run: ls -al
       - run: echo $(pwd)
       - run: python3 -V
