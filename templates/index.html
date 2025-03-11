@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Esther的工作助理</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Esther的工作助理</h1>
+        </div>
+
+        <div class="card">
+            <form id="contractForm" enctype="multipart/form-data" method="post" action="/generate">
+                <div class="form-group">
+                    <label for="fileInput">快速选择模板</label>
+                    <div class="template-buttons">
+                        <button type="button" class="btn btn-template" data-template="标准版合同模板_带变量.docx">标准版</button>
+                        <button type="button" class="btn btn-template" data-template="企业版合同模板_带变量.docx">企业版</button>
+                        <button type="button" class="btn btn-template" data-template="定制版合同模板_带变量.docx">定制版</button>
+                        <button type="button" class="btn btn-template" data-template="青春版合同模板_带变量.docx">青春版</button>
+                        <button type="button" class="btn btn-template" data-template="专业版合同模板_带变量.docx">专业版</button>
+                    </div>
+                </div>
+                <input type="file" name="template" accept=".docx" required class="file-input" id="fileInput" style="display: none;">
+                <div class="file-info" id="fileInfo" style="display: none;"></div>
+
+                <!-- 甲方基本信息 section -->
+                <div class="form-section">
+                    <h3>甲方基本信息</h3>
+                    <div class="variables-form">
+                        <div class="form-group full-width">
+                            <label for="variablesInput">粘贴变量信息（自动识别填写）</label>
+                            <textarea class="form-control" id="variablesInput" rows="5" placeholder="粘贴包含变量信息的文本，例如：&#13;&#10;公司名称：测试科技有限公司&#13;&#10;税号：91330000123456789X&#13;&#10;..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="company_name">公司名称（必填）</label>
+                            <input type="text" class="form-control" name="company_name" id="company_name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="tax_number">税号（必填）</label>
+                            <input type="text" class="form-control" name="tax_number" id="tax_number" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="reg_address">注册地址</label>
+                            <input type="text" class="form-control" name="reg_address" id="reg_address">
+                        </div>
+                        <div class="form-group">
+                            <label for="reg_phone">注册电话</label>
+                            <input type="text" class="form-control" name="reg_phone" id="reg_phone">
+                        </div>
+                        <div class="form-group">
+                            <label for="bank_name">开户行</label>
+                            <input type="text" class="form-control" name="bank_name" id="bank_name">
+                        </div>
+                        <div class="form-group">
+                            <label for="bank_account">账号</label>
+                            <input type="text" class="form-control" name="bank_account" id="bank_account">
+                        </div>
+                        <div class="form-group">
+                            <label for="contact_name">联系人</label>
+                            <input type="text" class="form-control" name="contact_name" id="contact_name">
+                        </div>
+                        <div class="form-group">
+                            <label for="contact_phone">联系电话</label>
+                            <input type="text" class="form-control" name="contact_phone" id="contact_phone">
+                        </div>
+                        <div class="form-group">
+                            <label for="mail_address">邮寄地址</label>
+                            <input type="text" class="form-control" name="mail_address" id="mail_address">
+                        </div>
+                        <div class="form-group">
+                            <label for="jdy_account">简道云账号（必填）</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" name="jdy_account" id="jdy_account" required oninput="debounceQueryCustomer(event)">
+                                <input type="file" id="excelUpload" accept=".xlsx" style="display: none;">
+                                <button type="button" class="btn btn-excel" onclick="document.getElementById('excelUpload').click()">导入Excel</button>
+                                <span id="lastImportTime" class="last-import-time"></span>
+                            </div>
+                        </div>
+                        <div id="customerInfo" class="form-group full-width" style="display: none;">
+                            <div class="customer-info-box">
+                                <div class="info-row">
+                                    <label>公司名称：</label>
+                                    <span id="companyName"></span>
+                                </div>
+                                <div class="info-row">
+                                    <label>客户类型：</label>
+                                    <span id="customerType"></span>
+                                </div>
+                                <div class="info-row">
+                                    <label>续费责任销售：</label>
+                                    <span id="salesPerson"></span>
+                                </div>
+                                <div class="info-row">
+                                    <label>版本：</label>
+                                    <span id="version"></span>
+                                </div>
+                                <div class="info-row">
+                                    <label>版本到期时间：</label>
+                                    <span id="expiryDate"></span>
+                                </div>
+                                <div class="info-row">
+                                    <label>ARR：</label>
+                                    <span id="uidArr"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 服务期限 section -->
+                <div class="form-section">
+                    <h3>服务期限</h3>
+                    <div class="variables-form">
+                        <div class="form-group">
+                            <label for="serviceYears">服务年限（必填）</label>
+                            <input type="number" class="form-control" name="service_years" required min="1" id="serviceYears">
+                        </div>
+                        <div class="form-group">
+                            <label for="startYear">开始年份（必填）</label>
+                            <input type="number" class="form-control" name="start_year" required id="startYear">
+                        </div>
+                        <div class="form-group">
+                            <label for="startMonth">开始月份（必填）</label>
+                            <input type="number" class="form-control" name="start_month" min="1" max="12" required id="startMonth">
+                        </div>
+                        <div class="form-group">
+                            <label for="startDay">开始日期（必填）</label>
+                            <input type="number" class="form-control" name="start_day" min="1" max="31" required id="startDay">
+                        </div>
+                        <div class="form-group">
+                            <label for="endYear">结束年份（自动计算）</label>
+                            <input type="number" class="form-control" name="end_year" required readonly id="endYear">
+                        </div>
+                        <div class="form-group">
+<label for="endMonth">结束月份（自动计算）</label>
+                            <input type="number" class="form-control" name="end_month" min="1" max="12" required readonly id="endMonth">
+                        </div>
+                        <div class="form-group">
+                            <label for="endDay">结束日期（自动计算）</label>
+                            <input type="number" class="form-control" name="end_day" min="1" max="31" required readonly id="endDay">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 费用信息 section -->
+                <div class="form-section">
+                    <h3>费用信息</h3>
+                    <div class="variables-form">
+                        <div class="form-group">
+                            <label for="totalAmount">服务费用金额（数字）</label>
+                            <input type="number" class="form-control" name="total_amount" required id="totalAmount" oninput="calculateUnitPrice()">
+                        </div>
+                        <div class="form-group">
+                            <label for="user_count">使用人数</label>
+                            <input type="number" class="form-control" name="user_count" id="user_count" required min="1" oninput="calculateUnitPrice()">
+                        </div>
+                        <div class="form-group">
+                            <label for="unitPrice">单价（元/人/年）</label>
+                            <input type="number" class="form-control" name="unit_price" required id="unitPrice" oninput="calculateTotalAmount()" step="0.01">
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="totalAmountCn">服务费用金额（大写，自动生成）</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" name="total_amount_cn" required readonly id="totalAmountCn">
+                                <button type="button" class="btn btn-secondary" onclick="fillTestData()">填充测试数据</button>
+                                <button type="submit" class="btn btn-generate">生成合同</button>
+                            </div>
+                        </div>
+                        <input type="hidden" name="payment_amount" id="paymentAmount">
+                        <input type="hidden" name="payment_amount_cn" id="paymentAmountCn">
+                       
+                    </div>
+                </div>
+
+                <!-- 开票信息整合 section -->
+                <div class="form-section">
+                    <h3>开票信息整合</h3>
+                    <div class="variables-form">
+                        <div class="form-group">
+                            <label for="invoiceType">发票类型</label>
+                            <select class="form-control" id="invoiceType" onchange="generateInvoiceInfo()">
+                                <option value="帆软专票">帆软专票</option>
+                                <option value="帆软普票">帆软普票</option>
+                                <option value="上海帆软专票">上海帆软专票</option>
+                                <option value="上海帆软普票">上海帆软普票</option>
+                                <option value="个人发票">个人发票</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="invoiceEmail">邮箱</label>
+                            <div class="input-group">
+                                <input type="email" class="form-control" id="invoiceEmail" onchange="generateInvoiceInfo()" oninput="generateInvoiceInfo()">
+                                <button type="button" class="btn btn-copy" onclick="copyInvoiceInfo()">复制开票信息</button>
+                            </div>
+                        </div>
+                        <div class="form-group full-width">
+                            <div class="invoice-info-box">
+                                <div class="invoice-info-section">
+                                    <textarea class="form-control" id="invoiceInfo" rows="8" readonly placeholder="开票信息将自动生成在这里"></textarea>
+                                </div>
+                                <div class="invoice-history-section">
+                                    <textarea class="form-control" id="invoiceHistory" rows="8" readonly placeholder="历史开票信息将显示在这里"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // 填充测试数据
+        function fillTestData() {
+            // 填充甲方基本信息
+            document.querySelector('[name="company_name"]').value = '测试科技有限公司';
+            document.querySelector('[name="tax_number"]').value = '91330000123456789X';
+            document.querySelector('[name="reg_address"]').value = '浙江省杭州市西湖区测试路88号';
+            document.querySelector('[name="reg_phone"]').value = '0571-88888888';
+            document.querySelector('[name="jdy_account"]').value = 'test@jiandaoyun.com';
+
+            // 填充服务期限
+            document.getElementById('serviceYears').value = '2';
+            document.getElementById('startYear').value = '2025';
+            document.getElementById('startMonth').value = '3';
+            document.getElementById('startDay').value = '6';
+            
+            // 触发自动计算结束日期
+            calculateEndDate();
+
+            // 填充费用信息
+            document.getElementById('totalAmount').value = '100000';
+            document.querySelector('[name="user_count"]').value = '50';
+            // 触发自动计算单价
+            calculateUnitPrice();
+        }
+
+        const fileInput = document.getElementById('fileInput');
+        const fileInfo = document.getElementById('fileInfo');
+
+        // 数字转中文大写
+        function numberToChinese(num) {
+            if (num === 0) {
+                return '零元整';
+            }
+
+            const chineseNums = ['零', '壹', '贰', '叁', '肆', '伍', '陆', '柒', '捌', '玖'];
+            const units = ['', '拾', '佰', '仟'];
+            const bigUnits = ['', '万', '亿'];
+            
+            num = Math.floor(num);
+            let strArr = [];
+            let current = num;
+            let level = 0;
+            
+            while (current > 0) {
+                let section = current % 10000;
+                let sectionStr = '';
+                let hasValue = false;
+                let lastHasValue = false;
+                
+                for (let i = 0; i < 4; i++) {
+                    const digit = section % 10;
+                    
+                    if (digit === 0) {
+                        if (lastHasValue && section > 0) {
+                            sectionStr = '零' + sectionStr;
+                        }
+                        lastHasValue = false;
+                    } else {
+                        sectionStr = chineseNums[digit] + units[i] + sectionStr;
+                        hasValue = true;
+                        lastHasValue = true;
+                    }
+                    
+                    section = Math.floor(section / 10);
+                }
+                
+                if (hasValue) {
+                    sectionStr = sectionStr + bigUnits[level] + (strArr.length > 0 ? '零' : '');
+                }
+                
+                if (sectionStr) {
+                    strArr.unshift(sectionStr.replace(/零+$/, '').replace(/零+/g, '零'));
+                }
+                
+                current = Math.floor(current / 10000);
+                level++;
+            }
+            
+            let result = strArr.join('').replace(/零+$/, '');
+            return result + '元整';
+        }
+
+        // 更新中文金额
+        function updateChineseAmount(value) {
+            const num = parseFloat(value) || 0;
+            document.getElementById('totalAmountCn').value = numberToChinese(num);
+            document.getElementById('paymentAmount').value = num;
+            document.getElementById('paymentAmountCn').value = numberToChinese(num);
+        }
+
+        // 计算单价
+        function calculateUnitPrice() {
+            const totalAmount = parseFloat(document.getElementById('totalAmount').value) || 0;
+            const userCount = parseFloat(document.querySelector('[name="user_count"]').value) || 0;
+            const serviceYears = parseFloat(document.getElementById('serviceYears').value) || 0;
+
+            if (totalAmount && userCount && serviceYears) {
+                const unitPrice = totalAmount / (userCount * serviceYears);
+                document.getElementById('unitPrice').value = unitPrice.toFixed(2);
+                updateChineseAmount(totalAmount);
+            }
+        }
+
+        // 根据单价计算总金额
+        function calculateTotalAmount() {
+            const unitPrice = parseFloat(document.getElementById('unitPrice').value) || 0;
+            const userCount = parseFloat(document.querySelector('[name="user_count"]').value) || 0;
+            const serviceYears = parseFloat(document.getElementById('serviceYears').value) || 0;
+
+            if (unitPrice && userCount && serviceYears) {
+                const totalAmount = unitPrice * userCount * serviceYears;
+                document.getElementById('totalAmount').value = totalAmount.toFixed(2);
+                updateChineseAmount(totalAmount);
+            }
+        }
+
+        // 自动计算结束日期
+        function calculateEndDate() {
+            const serviceYears = parseInt(document.getElementById('serviceYears').value) || 0;
+            const startYear = parseInt(document.getElementById('startYear').value) || 0;
+            const startMonth = parseInt(document.getElementById('startMonth').value) || 0;
+            const startDay = parseInt(document.getElementById('startDay').value) || 0;
+
+            if (serviceYears && startYear && startMonth && startDay) {
+                const endYear = document.getElementById('endYear');
+                const endMonth = document.getElementById('endMonth');
+                const endDay = document.getElementById('endDay');
+
+                endYear.value = startYear + serviceYears;
+                endMonth.value = startMonth;
+                endDay.value = startDay;
+            }
+        }
+
+        // 添加服务期限相关字段的事件监听
+        document.getElementById('serviceYears').addEventListener('input', function() {
+            calculateEndDate();
+            if (document.getElementById('unitPrice').value) {
+                calculateTotalAmount();
+            } else {
+                calculateUnitPrice();
+            }
+        });
+
+        // 添加费用相关字段的事件监听
+        document.getElementById('totalAmount').addEventListener('input', calculateUnitPrice);
+        document.querySelector('[name="user_count"]').addEventListener('input', function() {
+            if (document.getElementById('unitPrice').value) {
+                calculateTotalAmount();
+            } else {
+                calculateUnitPrice();
+            }
+        });
+        document.getElementById('unitPrice').addEventListener('input', calculateTotalAmount);
+
+        // 变量信息自动识别增强
+        document.getElementById('variablesInput').addEventListener('input', function(e) {
+            const text = e.target.value;
+            const lines = text.split('\n');
+            
+            // 定义变量映射关系，增加模糊匹配
+            const variableMapping = {
+                '公司名称': 'company_name',
+                '甲方': 'company_name',
+                '甲方名称': 'company_name',
+                '税号': 'tax_number',
+                '注册地址': 'reg_address',
+                '注册电话': 'reg_phone',
+                '开户行': 'bank_name',
+                '账号': 'bank_account',
+                '联系人': 'contact_name',
+                '联系电话': 'contact_phone',
+                '邮寄地址': 'mail_address',
+                '简道云账号': 'jdy_account'
+            };
+
+            // 解析文本中的变量
+            lines.forEach(line => {
+                const parts = line.split(/[：:]/); // 支持中英文冒号
+                if (parts.length === 2) {
+                    const key = parts[0].trim();
+                    const value = parts[1].trim();
+                    
+                    // 查找匹配的映射
+                    for (const [pattern, fieldName] of Object.entries(variableMapping)) {
+                        if (key.includes(pattern)) {
+                            const formField = document.querySelector(`[name="${fieldName}"]`);
+                            if (formField) {
+                                formField.value = value;
+                                break;
+                            }
+                        }
+                    }
+                }
+            });
+        });
+
+        // 模板选择功能
+        document.querySelectorAll('.btn-template').forEach(button => {
+            button.addEventListener('click', function() {
+                const templateName = this.dataset.template;
+                
+                // 移除其他按钮的active状态
+                document.querySelectorAll('.btn-template').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                
+                // 添加当前按钮的active状态
+                this.classList.add('active');
+                
+                // 从服务器获取模板文件
+                fetch(templateName)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('模板文件获取失败');
+                        }
+                        return response.blob();
+                    })
+                    .then(blob => {
+                        // 创建文件对象
+                        const file = new File([blob], templateName, {
+                            type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+                        });
+                        
+                        // 设置到文件输入框
+                        const dataTransfer = new DataTransfer();
+                        dataTransfer.items.add(file);
+                        fileInput.files = dataTransfer.files;
+                        
+                        // 更新文件信息显示
+                        fileInfo.textContent = `已选择文件：${templateName}`;
+                        fileInfo.style.color = '#155724';
+                    })
+                    .catch(error => {
+                        console.error('模板加载失败:', error);
+                        alert('模板加载失败，请重试或手动上传文件');
+                    });
+            });
+        });
+
+        // 开票信息生成功能
+        function generateInvoiceInfo() {
+            const fields = {
+                jdyAccount: document.querySelector('[name="jdy_account"]').value || '',
+                invoiceType: document.getElementById('invoiceType').value || '',
+                companyName: document.querySelector('[name="company_name"]').value || '',
+                taxNumber: document.querySelector('[name="tax_number"]').value || '',
+                regAddress: document.querySelector('[name="reg_address"]').value || '',
+                regPhone: document.querySelector('[name="reg_phone"]').value || '',
+                bankName: document.querySelector('[name="bank_name"]').value || '',
+                bankAccount: document.querySelector('[name="bank_account"]').value || '',
+                email: document.getElementById('invoiceEmail').value || ''
+            };
+
+            const lines = [];
+            lines.push(`简道云ID：${fields.jdyAccount}`);
+            lines.push(`发票类型：${fields.invoiceType}`);
+            lines.push(`公司名称：${fields.companyName}`);
+            lines.push(`税号：${fields.taxNumber}`);
+            lines.push(`地址：${fields.regAddress}`);
+            lines.push(`电话：${fields.regPhone}`);
+
+            if (fields.bankName && fields.bankAccount) {
+                lines.push(`开户行：${fields.bankName}`);
+                lines.push(`账号：${fields.bankAccount}`);
+            }
+
+            if (fields.email) {
+                lines.push(`邮箱：${fields.email}`);
+            }
+
+            document.getElementById('invoiceInfo').value = lines.join('\n');
+        }
+
+        // 添加所有相关字段的事件监听
+        function addInvoiceListeners() {
+            const fields = [
+                '[name="jdy_account"]',
+                '[name="company_name"]',
+                '[name="tax_number"]',
+                '[name="reg_address"]',
+                '[name="reg_phone"]',
+                '[name="bank_name"]',
+                '[name="bank_account"]',
+                '#invoiceType',
+                '#invoiceEmail'
+            ];
+
+            fields.forEach(selector => {
+                const element = document.querySelector(selector);
+                if (element) {
+                    ['input', 'change'].forEach(event => {
+                        element.addEventListener(event, generateInvoiceInfo);
+                    });
+                }
+            });
+        }
+
+        // 检查并显示最后导入时间
+        fetch('/get_last_import_time')
+            .then(response => response.json())
+            .then(data => {
+                if (data.last_import_time) {
+                    document.getElementById('lastImportTime').textContent = `最后导入: ${data.last_import_time}`;
+                }
+            });
+
+        // Excel文件上传处理
+        document.getElementById('excelUpload').addEventListener('change', function(e) {
+            if (!this.files.length) return;
+            
+            const file = this.files[0];
+            const formData = new FormData();
+            formData.append('file', file);
+
+            fetch('/upload_excel', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    alert(data.error);
+                } else {
+                    document.getElementById('lastImportTime').textContent = `最后导入: ${data.last_import_time}`;
+                    alert('Excel文件导入成功');
+                }
+            })
+            .catch(error => {
+                alert('文件上传失败: ' + error);
+            });
+
+            // 清除文件选择，允许重复选择同一文件
+            this.value = '';
+        });
+
+        // 开票历史记录相关功能
+        function saveInvoiceHistory(invoiceInfo) {
+            const history = JSON.parse(localStorage.getItem('invoiceHistory') || '[]');
+            const newRecord = {
+                time: new Date().toISOString(),
+                content: invoiceInfo
+            };
+            
+            history.unshift(newRecord);
+            
+            // 只保留30天内的记录
+            const thirtyDaysAgo = new Date();
+            thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+            const filteredHistory = history.filter(record => 
+                new Date(record.time) > thirtyDaysAgo
+            );
+            
+            localStorage.setItem('invoiceHistory', JSON.stringify(filteredHistory));
+            
+            // 更新历史记录显示
+            const historyTextarea = document.getElementById('invoiceHistory');
+            if (filteredHistory.length === 0) {
+                historyTextarea.value = '暂无历史记录';
+            } else {
+                historyTextarea.value = filteredHistory.map(record => 
+                    `${new Date(record.time).toLocaleString('zh-CN')}\n${record.content}\n\n`
+                ).join('---\n');
+            }
+        }
+
+        // 复制开票信息功能
+        function copyInvoiceInfo() {
+            const invoiceInfo = document.getElementById('invoiceInfo');
+            invoiceInfo.select();
+            document.execCommand('copy');
+            
+            // 保存到历史记录并立即显示
+            saveInvoiceHistory(invoiceInfo.value);
+            
+            // 显示复制成功提示
+            const copyBtn = document.querySelector('.btn-copy');
+            const originalText = copyBtn.textContent;
+            copyBtn.textContent = '已复制';
+            setTimeout(() => {
+                copyBtn.textContent = originalText;
+            }, 2000);
+        }
+
+        // 防抖函数
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        // 客户查询功能
+        const debounceQueryCustomer = debounce((event) => {
+            const jdyAccount = event.target.value;
+            if (jdyAccount.length < 3) return; // 至少输入3个字符才开始查询
+            queryCustomer(jdyAccount);
+        }, 500); // 500ms 防抖
+
+        async function queryCustomer(jdyAccount) {
+            try {
+                console.log('查询简道云账号:', jdyAccount); // 调试输出
+                const response = await fetch('/query_customer', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ jdy_id: jdyAccount })
+                });
+                
+                console.log('响应状态:', response.status); // 调试输出
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    console.error('查询错误:', error); // 调试输出
+                    throw new Error(error.error || '查询失败');
+                }
+                
+                const data = await response.json();
+                console.log('查询结果:', data); // 调试输出
+                
+                // 显示客户信息
+                document.getElementById('companyName').textContent = data.company_name || '';
+                document.getElementById('customerType').textContent = data.customer_type || '';
+                document.getElementById('salesPerson').textContent = data.sales || '';
+                document.getElementById('version').textContent = data.version || '';
+                document.getElementById('expiryDate').textContent = data.expiry_date || '';
+                document.getElementById('uidArr').textContent = data.uid_arr || '';
+                
+                // 自动填充公司名称
+                document.querySelector('[name="company_name"]').value = data.company_name || '';
+                
+                // 显示客户信息框
+                document.getElementById('customerInfo').style.display = 'block';
+            } catch (error) {
+                alert(error.message);
+                document.getElementById('customerInfo').style.display = 'none';
+            }
+        }
+
+        document.getElementById('contractForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const templateFile = document.querySelector('input[type="file"]').files[0];
+            if (!templateFile) {
+                alert('请选择合同模板文件');
+                return;
+            }
+
+            this.submit();
+        });
+
+        // 初始化
+        addInvoiceListeners();
+        generateInvoiceInfo();
+        saveInvoiceHistory(''); // 初始化时显示历史记录
+    </script>
+</body>
+</html>

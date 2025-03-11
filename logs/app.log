@@ -1,0 +1,315 @@
+2025-03-10 16:11:41,346 WARNING  * Debugger is active!
+2025-03-10 16:11:41,347 INFO  * Debugger PIN: 102-193-532
+2025-03-10 16:11:45,398 INFO  * Detected change in '/root/code/zxl/word_template_plugin/app.py', reloading
+2025-03-10 16:11:46,107 WARNING  * Debugger is active!
+2025-03-10 16:11:46,108 INFO  * Debugger PIN: 102-193-532
+2025-03-10 16:14:12,190 INFO [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5001
+ * Running on http://10.0.0.111:5001
+2025-03-10 16:14:12,190 INFO [33mPress CTRL+C to quit[0m
+2025-03-10 16:14:12,191 INFO  * Restarting with stat
+2025-03-10 16:14:12,826 WARNING  * Debugger is active!
+2025-03-10 16:14:12,827 INFO  * Debugger PIN: 102-193-532
+2025-03-10 16:16:21,363 INFO 10.0.0.102 - - [10/Mar/2025 16:16:21] "GET / HTTP/1.0" 200 -
+2025-03-10 16:16:21,785 INFO 10.0.0.102 - - [10/Mar/2025 16:16:21] "[36mGET /static/style.css HTTP/1.0[0m" 304 -
+2025-03-10 16:16:21,862 INFO 10.0.0.102 - - [10/Mar/2025 16:16:21] "GET /get_last_import_time HTTP/1.0" 200 -
+2025-03-10 16:16:22,219 INFO 10.0.0.102 - - [10/Mar/2025 16:16:22] "[31m[1mGET /favicon.ico HTTP/1.0[0m" 400 -
+2025-03-10 16:16:50,694 INFO 10.0.0.102 - - [10/Mar/2025 16:16:50] "GET /标准版合同模板_带变量.docx HTTP/1.0" 200 -
+2025-03-10 16:20:50,369 INFO  * Detected change in '/root/code/zxl/word_template_plugin/app.py', reloading
+2025-03-10 16:20:50,458 INFO  * Restarting with stat
+2025-03-10 16:20:51,173 WARNING  * Debugger is active!
+2025-03-10 16:20:51,174 INFO  * Debugger PIN: 102-193-532
+2025-03-10 16:20:59,269 INFO  * Detected change in '/root/code/zxl/word_template_plugin/app.py', reloading
+2025-03-10 16:20:59,363 INFO  * Restarting with stat
+2025-03-10 16:21:00,030 WARNING  * Debugger is active!
+2025-03-10 16:21:00,030 INFO  * Debugger PIN: 102-193-532
+2025-03-10 16:21:14,173 INFO  * Detected change in '/root/code/zxl/word_template_plugin/app.py', reloading
+2025-03-10 16:21:14,263 INFO  * Restarting with stat
+2025-03-10 16:22:15,982 INFO 当前目录: /root/code/zxl/word_template_plugin
+2025-03-10 16:22:15,991 INFO [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5001
+ * Running on http://10.0.0.111:5001
+2025-03-10 16:22:15,992 INFO [33mPress CTRL+C to quit[0m
+2025-03-10 16:22:15,992 INFO  * Restarting with stat
+2025-03-10 16:22:16,665 INFO 当前目录: /root/code/zxl/word_template_plugin
+2025-03-10 16:22:16,673 WARNING  * Debugger is active!
+2025-03-10 16:22:16,674 INFO  * Debugger PIN: 102-193-532
+2025-03-10 16:42:09,042 INFO 当前目录: /root/code/zxl/word_template_plugin
+2025-03-10 16:42:09,059 INFO [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5001
+ * Running on http://10.0.0.111:5001
+2025-03-10 16:42:09,059 INFO [33mPress CTRL+C to quit[0m
+2025-03-10 16:42:09,061 INFO  * Restarting with stat
+2025-03-10 16:42:09,797 INFO 当前目录: /root/code/zxl/word_template_plugin
+2025-03-10 16:42:09,803 WARNING  * Debugger is active!
+2025-03-10 16:42:09,804 INFO  * Debugger PIN: 102-193-532
+2025-03-10 16:45:03,373 INFO  * Detected change in '/root/code/zxl/word_template_plugin/app.py', reloading
+2025-03-10 16:45:03,491 INFO  * Restarting with stat
+2025-03-10 16:45:05,435 INFO 当前目录: /root/code/zxl/word_template_plugin
+2025-03-10 16:45:05,445 INFO [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5001
+ * Running on http://10.0.0.111:5001
+2025-03-10 16:45:05,445 INFO [33mPress CTRL+C to quit[0m
+2025-03-10 16:45:05,446 INFO  * Restarting with stat
+2025-03-10 16:45:06,102 INFO 当前目录: /root/code/zxl/word_template_plugin
+2025-03-10 16:45:06,113 WARNING  * Debugger is active!
+2025-03-10 16:45:06,114 INFO  * Debugger PIN: 102-193-532
+2025-03-10 16:45:12,184 INFO  * Detected change in '/root/code/zxl/word_template_plugin/test/test.py', reloading
+2025-03-10 16:45:12,287 INFO  * Restarting with stat
+2025-03-10 16:45:12,923 INFO 当前目录: /root/code/zxl/word_template_plugin
+2025-03-10 16:45:12,931 WARNING  * Debugger is active!
+2025-03-10 16:45:12,931 INFO  * Debugger PIN: 102-193-532
+2025-03-10 16:45:28,083 INFO  * Detected change in '/root/code/zxl/word_template_plugin/test/test.py', reloading
+2025-03-10 16:45:28,201 INFO  * Restarting with stat
+2025-03-10 16:45:28,870 INFO 当前目录: /root/code/zxl/word_template_plugin
+2025-03-10 16:45:28,878 WARNING  * Debugger is active!
+2025-03-10 16:45:28,878 INFO  * Debugger PIN: 102-193-532
+2025-03-10 16:45:33,936 INFO  * Detected change in '/root/code/zxl/word_template_plugin/test/test.py', reloading
+2025-03-10 16:45:34,028 INFO  * Restarting with stat
+2025-03-10 16:45:34,642 INFO 当前目录: /root/code/zxl/word_template_plugin
+2025-03-10 16:45:34,650 WARNING  * Debugger is active!
+2025-03-10 16:45:34,651 INFO  * Debugger PIN: 102-193-532
+2025-03-10 16:45:36,685 INFO  * Detected change in '/root/code/zxl/word_template_plugin/test/test.py', reloading
+2025-03-10 16:45:36,774 INFO  * Restarting with stat
+2025-03-10 16:45:37,379 INFO 当前目录: /root/code/zxl/word_template_plugin
+2025-03-10 16:45:37,386 WARNING  * Debugger is active!
+2025-03-10 16:45:37,386 INFO  * Debugger PIN: 102-193-532
+2025-03-10 16:45:39,416 INFO  * Detected change in '/root/code/zxl/word_template_plugin/test/test.py', reloading
+2025-03-10 16:45:39,506 INFO  * Restarting with stat
+2025-03-10 16:45:40,132 INFO 当前目录: /root/code/zxl/word_template_plugin
+2025-03-10 16:45:40,140 WARNING  * Debugger is active!
+2025-03-10 16:45:40,140 INFO  * Debugger PIN: 102-193-532
+2025-03-10 16:45:48,229 INFO  * Detected change in '/root/code/zxl/word_template_plugin/test/test.py', reloading
+2025-03-10 16:45:48,323 INFO  * Restarting with stat
+2025-03-10 16:45:49,207 INFO 当前目录: /root/code/zxl/word_template_plugin
+2025-03-10 16:45:49,215 WARNING  * Debugger is active!
+2025-03-10 16:45:49,215 INFO  * Debugger PIN: 102-193-532
+2025-03-10 16:47:34,437 INFO 当前目录: /root/code/zxl/word_template_plugin
+2025-03-10 16:47:34,442 ERROR Excel加载错误: Missing optional dependency 'openpyxl'.  Use pip or conda to install openpyxl.
+2025-03-10 16:48:14,549 INFO  * Detected change in '/root/code/zxl/word_template_plugin/test.py', reloading
+2025-03-10 16:48:14,644 INFO  * Restarting with stat
+2025-03-10 16:48:15,261 INFO 当前目录: /root/code/zxl/word_template_plugin
+2025-03-10 16:48:15,270 WARNING  * Debugger is active!
+2025-03-10 16:48:15,271 INFO  * Debugger PIN: 102-193-532
+2025-03-10 16:48:17,305 INFO  * Detected change in '/root/code/zxl/word_template_plugin/test.py', reloading
+2025-03-10 16:48:17,397 INFO  * Restarting with stat
+2025-03-10 16:48:18,020 INFO 当前目录: /root/code/zxl/word_template_plugin
+2025-03-10 16:48:18,031 WARNING  * Debugger is active!
+2025-03-10 16:48:18,032 INFO  * Debugger PIN: 102-193-532
+2025-03-10 16:48:19,069 INFO  * Detected change in '/root/code/zxl/word_template_plugin/test.py', reloading
+2025-03-10 16:48:19,170 INFO  * Restarting with stat
+2025-03-10 16:48:19,860 INFO 当前目录: /root/code/zxl/word_template_plugin
+2025-03-10 16:48:19,869 WARNING  * Debugger is active!
+2025-03-10 16:48:19,869 INFO  * Debugger PIN: 102-193-532
+2025-03-10 16:48:37,232 INFO 当前目录: /root/code/zxl/word_template_plugin
+2025-03-10 16:48:37,238 ERROR Excel加载错误: Missing optional dependency 'openpyxl'.  Use pip or conda to install openpyxl.
+2025-03-10 16:49:18,407 INFO  * Detected change in '/root/code/zxl/word_template_plugin/app.py', reloading
+2025-03-10 16:49:18,512 INFO  * Restarting with stat
+2025-03-10 16:49:19,286 INFO 当前目录: /root/code/zxl/word_template_plugin
+2025-03-10 16:49:19,294 WARNING  * Debugger is active!
+2025-03-10 16:49:19,295 INFO  * Debugger PIN: 102-193-532
+2025-03-10 16:49:21,341 INFO  * Detected change in '/root/code/zxl/word_template_plugin/app.py', reloading
+2025-03-10 16:49:21,505 INFO  * Restarting with stat
+2025-03-10 16:49:22,264 INFO 当前目录: /root/code/zxl/word_template_plugin
+2025-03-10 16:49:22,271 WARNING  * Debugger is active!
+2025-03-10 16:49:22,272 INFO  * Debugger PIN: 102-193-532
+2025-03-10 16:49:24,307 INFO  * Detected change in '/root/code/zxl/word_template_plugin/app.py', reloading
+2025-03-10 16:49:24,405 INFO  * Restarting with stat
+2025-03-10 16:49:25,010 INFO 当前目录: /root/code/zxl/word_template_plugin
+2025-03-10 16:49:25,017 WARNING  * Debugger is active!
+2025-03-10 16:49:25,017 INFO  * Debugger PIN: 102-193-532
+2025-03-10 16:49:28,880 INFO 当前目录: /root/code/zxl/word_template_plugin
+2025-03-10 16:49:28,885 ERROR Excel加载错误: Missing optional dependency 'openpyxl'.  Use pip or conda to install openpyxl.
+2025-03-10 20:49:29,779 INFO 10.0.0.102 - - [10/Mar/2025 20:49:29] "GET /企业版合同模板_带变量.docx HTTP/1.0" 200 -
+2025-03-11 00:51:38,086 INFO  * Detected change in '/root/code/zxl/word_template_plugin/app.py', reloading
+2025-03-11 00:51:38,208 INFO  * Restarting with stat
+2025-03-11 01:06:47,955 INFO: [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5001
+ * Running on http://10.0.0.111:5001
+2025-03-11 01:06:47,958 INFO: [33mPress CTRL+C to quit[0m
+2025-03-11 01:06:47,959 INFO:  * Restarting with stat
+2025-03-11 01:06:48,570 WARNING:  * Debugger is active!
+2025-03-11 01:06:48,571 INFO:  * Debugger PIN: 102-193-532
+2025-03-11 01:07:00,874 INFO: 10.0.0.102 - - [11/Mar/2025 01:07:00] "GET / HTTP/1.0" 200 -
+2025-03-11 01:07:01,061 INFO: 10.0.0.102 - - [11/Mar/2025 01:07:01] "[36mGET /static/style.css HTTP/1.0[0m" 304 -
+2025-03-11 01:07:01,152 INFO: 10.0.0.102 - - [11/Mar/2025 01:07:01] "GET /get_last_import_time HTTP/1.0" 200 -
+2025-03-11 01:07:01,286 INFO: 10.0.0.102 - - [11/Mar/2025 01:07:01] "[31m[1mGET /favicon.ico HTTP/1.0[0m" 400 -
+2025-03-11 01:07:12,348 ERROR: Excel加载错误: Missing optional dependency 'openpyxl'.  Use pip or conda to install openpyxl.
+2025-03-11 01:07:12,348 INFO: 10.0.0.102 - - [11/Mar/2025 01:07:12] "[35m[1mPOST /query_customer HTTP/1.0[0m" 500 -
+2025-03-11 01:08:56,936 INFO: [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5001
+ * Running on http://10.0.0.111:5001
+2025-03-11 01:08:56,936 INFO: [33mPress CTRL+C to quit[0m
+2025-03-11 01:08:56,937 INFO:  * Restarting with stat
+2025-03-11 01:08:57,606 WARNING:  * Debugger is active!
+2025-03-11 01:08:57,607 INFO:  * Debugger PIN: 102-193-532
+2025-03-11 01:09:05,717 INFO: 10.0.0.102 - - [11/Mar/2025 01:09:05] "GET / HTTP/1.0" 200 -
+2025-03-11 01:09:05,899 INFO: 10.0.0.102 - - [11/Mar/2025 01:09:05] "[36mGET /static/style.css HTTP/1.0[0m" 304 -
+2025-03-11 01:09:05,988 INFO: 10.0.0.102 - - [11/Mar/2025 01:09:05] "GET /get_last_import_time HTTP/1.0" 200 -
+2025-03-11 01:09:06,076 INFO: 10.0.0.102 - - [11/Mar/2025 01:09:06] "[31m[1mGET /favicon.ico HTTP/1.0[0m" 400 -
+2025-03-11 01:09:08,206 INFO: 客户数据: 公司名称                   雅世置业（集团）有限公司
+续费责任销售                   Esther.Zhu
+客户类型                 25年到期（ARR低于5万）
+规则类型                            NaN
+客户归属战区                         北京大区
+客户汇总ARR                      4039.0
+当前责任销售                  public-公共账号
+当前JDY销售                    Qari-秦冰清
+简道云账号      6327d3b75130fe0008c0e944
+版本                           用户数标准版
+版本到期时间          2025-05-29 00:00:00
+是否25年到期                     25年账号到期
+客户分类                      历史（融合3年内）
+UID-ARR                      4039.0
+应续ARR                        4039.0
+预计续费销售额                         NaN
+预计续费净回款                      2684.0
+预计销售额                        4039.0
+预计净回款                        2684.0
+Name: 1125, dtype: object
+2025-03-11 01:09:08,206 INFO: 列名: ['公司名称', '续费责任销售', '客户类型', '规则类型', '客户归属战区', '客户汇总ARR', '当前责任销售', '当前JDY销售', '简道云账号', '版本', '版本到期时间', '是否25年到期', '客户分类', 'UID-ARR', '应续ARR', '预计续费销售额', '预计续费净回款', '预计销售额', '预计净回款']
+2025-03-11 01:09:08,207 INFO: 10.0.0.102 - - [11/Mar/2025 01:09:08] "POST /query_customer HTTP/1.0" 200 -
+2025-03-11 04:02:59,533 ERROR: 10.0.0.1 - - [11/Mar/2025 04:02:59] code 400, message Bad HTTP/0.9 request type ('\x03\x00\x00/*à\x00\x00\x00\x00\x00Cookie:')
+2025-03-11 04:02:59,538 INFO: 10.0.0.1 - - [11/Mar/2025 04:02:59] "[35m[1m\x03\x00\x00/*à\x00\x00\x00\x00\x00Cookie: mstshash=Administr[0m" HTTPStatus.BAD_REQUEST -
+2025-03-11 09:47:30,436 INFO: 10.0.0.102 - - [11/Mar/2025 09:47:30] "GET / HTTP/1.0" 200 -
+2025-03-11 09:47:30,878 INFO: 10.0.0.102 - - [11/Mar/2025 09:47:30] "GET /static/style.css HTTP/1.0" 200 -
+2025-03-11 09:47:31,241 INFO: 10.0.0.102 - - [11/Mar/2025 09:47:31] "GET /get_last_import_time HTTP/1.0" 200 -
+2025-03-11 09:47:31,361 INFO: 10.0.0.102 - - [11/Mar/2025 09:47:31] "[31m[1mGET /favicon.ico HTTP/1.0[0m" 400 -
+2025-03-11 09:48:37,070 INFO: 客户数据: 公司名称                   武汉东昌仓贮技术有限公司
+续费责任销售                   Esther.Zhu
+客户类型                 25年到期（ARR低于5万）
+规则类型                            NaN
+客户归属战区                         华中大区
+客户汇总ARR                     26703.0
+当前责任销售                Reed.Deng-邓民鑫
+当前JDY销售                    Pray-戚钰鹏
+简道云账号      58579801bd0bbb75557b787d
+版本                              定制版
+版本到期时间          2025-03-18 00:00:00
+是否25年到期                     25年账号到期
+客户分类            非融合、年费5W内，当前在战区（私海）
+UID-ARR                     26703.0
+应续ARR                       26703.0
+预计续费销售额                         NaN
+预计续费净回款                     26018.8
+预计销售额                       26703.0
+预计净回款                       26018.8
+Name: 682, dtype: object
+2025-03-11 09:48:37,071 INFO: 列名: ['公司名称', '续费责任销售', '客户类型', '规则类型', '客户归属战区', '客户汇总ARR', '当前责任销售', '当前JDY销售', '简道云账号', '版本', '版本到期时间', '是否25年到期', '客户分类', 'UID-ARR', '应续ARR', '预计续费销售额', '预计续费净回款', '预计销售额', '预计净回款']
+2025-03-11 09:48:37,071 INFO: 10.0.0.102 - - [11/Mar/2025 09:48:37] "POST /query_customer HTTP/1.0" 200 -
+2025-03-11 09:48:50,391 INFO: 10.0.0.102 - - [11/Mar/2025 09:48:50] "GET /定制版合同模板_带变量.docx HTTP/1.0" 200 -
+2025-03-11 10:03:30,894 INFO: 客户数据: 公司名称                   雅世置业（集团）有限公司
+续费责任销售                   Esther.Zhu
+客户类型                 25年到期（ARR低于5万）
+规则类型                            NaN
+客户归属战区                         北京大区
+客户汇总ARR                      4039.0
+当前责任销售                  public-公共账号
+当前JDY销售                    Qari-秦冰清
+简道云账号      6327d3b75130fe0008c0e944
+版本                           用户数标准版
+版本到期时间          2025-05-29 00:00:00
+是否25年到期                     25年账号到期
+客户分类                      历史（融合3年内）
+UID-ARR                      4039.0
+应续ARR                        4039.0
+预计续费销售额                         NaN
+预计续费净回款                      2684.0
+预计销售额                        4039.0
+预计净回款                        2684.0
+Name: 1125, dtype: object
+2025-03-11 10:03:30,894 INFO: 列名: ['公司名称', '续费责任销售', '客户类型', '规则类型', '客户归属战区', '客户汇总ARR', '当前责任销售', '当前JDY销售', '简道云账号', '版本', '版本到期时间', '是否25年到期', '客户分类', 'UID-ARR', '应续ARR', '预计续费销售额', '预计续费净回款', '预计销售额', '预计净回款']
+2025-03-11 10:03:30,895 INFO: 10.0.0.102 - - [11/Mar/2025 10:03:30] "POST /query_customer HTTP/1.0" 200 -
+2025-03-11 10:05:50,196 INFO: 开始处理文件上传请求
+2025-03-11 10:05:50,198 INFO: 接收到文件: 定制版合同模板_带变量.docx
+2025-03-11 10:05:50,202 INFO: 模板文件已保存到临时文件: /tmp/tmpxjpbt1ex.docx
+2025-03-11 10:05:50,202 INFO: 接收到的表单数据: {'company_name': '雅世置业（集团）有限公司', 'tax_number': '91110105MA01EEG39W', 'reg_address': '北京市海淀区志新路9号四层401室', 'reg_phone': '010-8238 6688', 'bank_name': '招商银行股份有限公司北京大屯路支行', 'bank_account': '1109 4273 4210 901', 'contact_name': '', 'contact_phone': '', 'mail_address': '', 'jdy_account': '6327d3b75130fe0008c0e944', 'service_years': '3', 'start_year': '2025', 'start_month': '3', 'start_day': '6', 'end_year': '2028', 'end_month': '3', 'end_day': '6', 'total_amount': '10080', 'user_count': '30', 'unit_price': '112.00', 'total_amount_cn': '壹万捌拾元整', 'payment_amount': '10080', 'payment_amount_cn': '壹万捌拾元整'}
+2025-03-11 10:05:50,203 INFO: 创建输出临时文件: /tmp/tmpqx_hlhh0.docx
+2025-03-11 10:05:50,413 INFO: 合同生成完成，输出文件: /tmp/tmpqx_hlhh0.docx
+2025-03-11 10:05:50,414 INFO: 清理临时模板文件: /tmp/tmpxjpbt1ex.docx
+2025-03-11 10:05:50,414 INFO: 清理临时输出文件: /tmp/tmpqx_hlhh0.docx
+2025-03-11 10:05:50,414 INFO: 10.0.0.102 - - [11/Mar/2025 10:05:50] "POST /generate HTTP/1.0" 200 -
+2025-03-11 10:06:15,255 INFO: 10.0.0.102 - - [11/Mar/2025 10:06:15] "GET /标准版合同模板_带变量.docx HTTP/1.0" 200 -
+2025-03-11 10:06:19,492 INFO: 开始处理文件上传请求
+2025-03-11 10:06:19,497 INFO: 接收到文件: 定制版合同模板_带变量.docx
+2025-03-11 10:06:19,497 INFO: 模板文件已保存到临时文件: /tmp/tmprwtkze52.docx
+2025-03-11 10:06:19,498 INFO: 接收到的表单数据: {'company_name': '雅世置业（集团）有限公司', 'tax_number': '91110105MA01EEG39W', 'reg_address': '北京市海淀区志新路9号四层401室', 'reg_phone': '010-8238 6688', 'bank_name': '招商银行股份有限公司北京大屯路支行', 'bank_account': '1109 4273 4210 901', 'contact_name': '', 'contact_phone': '', 'mail_address': '', 'jdy_account': '6327d3b75130fe0008c0e944', 'service_years': '3', 'start_year': '2025', 'start_month': '3', 'start_day': '6', 'end_year': '2028', 'end_month': '3', 'end_day': '6', 'total_amount': '10080', 'user_count': '30', 'unit_price': '112.00', 'total_amount_cn': '壹万捌拾元整', 'payment_amount': '10080', 'payment_amount_cn': '壹万捌拾元整'}
+2025-03-11 10:06:19,498 INFO: 创建输出临时文件: /tmp/tmp5qmjobt_.docx
+2025-03-11 10:06:19,718 INFO: 合同生成完成，输出文件: /tmp/tmp5qmjobt_.docx
+2025-03-11 10:06:19,719 INFO: 清理临时模板文件: /tmp/tmprwtkze52.docx
+2025-03-11 10:06:19,719 INFO: 清理临时输出文件: /tmp/tmp5qmjobt_.docx
+2025-03-11 10:06:19,720 INFO: 10.0.0.102 - - [11/Mar/2025 10:06:19] "POST /generate HTTP/1.0" 200 -
+2025-03-11 10:06:48,030 INFO: 开始处理文件上传请求
+2025-03-11 10:06:48,033 INFO: 接收到文件: 标准版合同模板_带变量.docx
+2025-03-11 10:06:48,033 INFO: 模板文件已保存到临时文件: /tmp/tmp2vxkt92x.docx
+2025-03-11 10:06:48,033 INFO: 接收到的表单数据: {'company_name': '雅世置业（集团）有限公司', 'tax_number': '91110105MA01EEG39W', 'reg_address': '北京市海淀区志新路9号四层401室', 'reg_phone': '010-8238 6688', 'bank_name': '招商银行股份有限公司北京大屯路支行', 'bank_account': '1109 4273 4210 901', 'contact_name': '', 'contact_phone': '', 'mail_address': '', 'jdy_account': '6327d3b75130fe0008c0e944', 'service_years': '3', 'start_year': '2025', 'start_month': '3', 'start_day': '6', 'end_year': '2028', 'end_month': '3', 'end_day': '6', 'total_amount': '10080', 'user_count': '30', 'unit_price': '112.00', 'total_amount_cn': '壹万捌拾元整', 'payment_amount': '10080', 'payment_amount_cn': '壹万捌拾元整'}
+2025-03-11 10:06:48,034 INFO: 创建输出临时文件: /tmp/tmprsml8d59.docx
+2025-03-11 10:06:48,239 INFO: 合同生成完成，输出文件: /tmp/tmprsml8d59.docx
+2025-03-11 10:06:48,240 INFO: 清理临时模板文件: /tmp/tmp2vxkt92x.docx
+2025-03-11 10:06:48,240 INFO: 清理临时输出文件: /tmp/tmprsml8d59.docx
+2025-03-11 10:06:48,240 INFO: 10.0.0.102 - - [11/Mar/2025 10:06:48] "POST /generate HTTP/1.0" 200 -
+2025-03-11 10:07:42,235 INFO: 10.0.0.102 - - [11/Mar/2025 10:07:42] "[33mPOST /query_customer HTTP/1.0[0m" 404 -
+2025-03-11 10:07:59,134 INFO: 客户数据: 公司名称                   雅世置业（集团）有限公司
+续费责任销售                   Esther.Zhu
+客户类型                 25年到期（ARR低于5万）
+规则类型                            NaN
+客户归属战区                         北京大区
+客户汇总ARR                      4039.0
+当前责任销售                  public-公共账号
+当前JDY销售                    Qari-秦冰清
+简道云账号      6327d3b75130fe0008c0e944
+版本                           用户数标准版
+版本到期时间          2025-05-29 00:00:00
+是否25年到期                     25年账号到期
+客户分类                      历史（融合3年内）
+UID-ARR                      4039.0
+应续ARR                        4039.0
+预计续费销售额                         NaN
+预计续费净回款                      2684.0
+预计销售额                        4039.0
+预计净回款                        2684.0
+Name: 1125, dtype: object
+2025-03-11 10:07:59,134 INFO: 列名: ['公司名称', '续费责任销售', '客户类型', '规则类型', '客户归属战区', '客户汇总ARR', '当前责任销售', '当前JDY销售', '简道云账号', '版本', '版本到期时间', '是否25年到期', '客户分类', 'UID-ARR', '应续ARR', '预计续费销售额', '预计续费净回款', '预计销售额', '预计净回款']
+2025-03-11 10:07:59,135 INFO: 10.0.0.102 - - [11/Mar/2025 10:07:59] "POST /query_customer HTTP/1.0" 200 -
+2025-03-11 10:08:10,304 INFO: 开始处理文件上传请求
+2025-03-11 10:08:10,306 INFO: 接收到文件: 标准版合同模板_带变量.docx
+2025-03-11 10:08:10,306 INFO: 模板文件已保存到临时文件: /tmp/tmpi71oeev2.docx
+2025-03-11 10:08:10,307 INFO: 接收到的表单数据: {'company_name': '雅世置业（集团）有限公司', 'tax_number': '91330000123456789X', 'reg_address': '浙江省杭州市西湖区测试路88号', 'reg_phone': '0571-88888888', 'bank_name': '招商银行股份有限公司北京大屯路支行', 'bank_account': '1109 4273 4210 901', 'contact_name': '', 'contact_phone': '', 'mail_address': '', 'jdy_account': '6327d3b75130fe0008c0e944', 'service_years': '3', 'start_year': '2025', 'start_month': '5', 'start_day': '29', 'end_year': '2028', 'end_month': '5', 'end_day': '29', 'total_amount': '10080', 'user_count': '30', 'unit_price': '112.00', 'total_amount_cn': '壹万捌拾元整', 'payment_amount': '10080', 'payment_amount_cn': '壹万捌拾元整'}
+2025-03-11 10:08:10,307 INFO: 创建输出临时文件: /tmp/tmpg4rx37kr.docx
+2025-03-11 10:08:10,515 INFO: 合同生成完成，输出文件: /tmp/tmpg4rx37kr.docx
+2025-03-11 10:08:10,515 INFO: 清理临时模板文件: /tmp/tmpi71oeev2.docx
+2025-03-11 10:08:10,515 INFO: 清理临时输出文件: /tmp/tmpg4rx37kr.docx
+2025-03-11 10:08:10,516 INFO: 10.0.0.102 - - [11/Mar/2025 10:08:10] "POST /generate HTTP/1.0" 200 -
+2025-03-11 10:16:39,853 INFO: 10.0.0.102 - - [11/Mar/2025 10:16:39] "[33mPOST /query_customer HTTP/1.0[0m" 404 -
+2025-03-11 10:16:53,075 INFO: 客户数据: 公司名称                   广州超境汽车科技有限公司
+续费责任销售                   Esther.Zhu
+客户类型                 25年到期（ARR低于5万）
+规则类型                            NaN
+客户归属战区                         华南大区
+客户汇总ARR                     43800.0
+当前责任销售                 Della.Yu-余红娟
+当前JDY销售                Della.Yu-余红娟
+简道云账号      6018be77a069e20007e5ff15
+版本                           用户数企业版
+版本到期时间          2025-03-22 00:00:00
+是否25年到期                     25年账号到期
+客户分类                      历史（融合3年内）
+UID-ARR                     43800.0
+应续ARR                       43800.0
+预计续费销售额                         NaN
+预计续费净回款                     36505.8
+预计销售额                       43800.0
+预计净回款                       36505.8
+Name: 328, dtype: object
+2025-03-11 10:16:53,076 INFO: 列名: ['公司名称', '续费责任销售', '客户类型', '规则类型', '客户归属战区', '客户汇总ARR', '当前责任销售', '当前JDY销售', '简道云账号', '版本', '版本到期时间', '是否25年到期', '客户分类', 'UID-ARR', '应续ARR', '预计续费销售额', '预计续费净回款', '预计销售额', '预计净回款']
+2025-03-11 10:16:53,076 INFO: 10.0.0.102 - - [11/Mar/2025 10:16:53] "POST /query_customer HTTP/1.0" 200 -
+2025-03-11 10:52:41,331 INFO: 10.0.0.102 - - [11/Mar/2025 10:52:41] "GET / HTTP/1.0" 200 -
+2025-03-11 10:52:41,467 INFO: 10.0.0.102 - - [11/Mar/2025 10:52:41] "[36mGET /static/style.css HTTP/1.0[0m" 304 -
+2025-03-11 10:52:41,563 INFO: 10.0.0.102 - - [11/Mar/2025 10:52:41] "GET /get_last_import_time HTTP/1.0" 200 -
+2025-03-11 10:52:41,607 INFO: 10.0.0.102 - - [11/Mar/2025 10:52:41] "[31m[1mGET /favicon.ico HTTP/1.0[0m" 400 -
