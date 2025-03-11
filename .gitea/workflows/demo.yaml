@@ -8,6 +8,9 @@ jobs:
     steps:
       - run: echo "🎉 The job was automatically triggered by a ${{ gitea.event_name }} event."
       - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by Gitea!"
+      - run: git clone https://git.home.lewwen.top/liwenwen/deal.git
+      - run: ls -al
+      - run: cd deal
       - run: echo $(pwd)
       - run: python3 -V
       - run: python3 -m venv venv
