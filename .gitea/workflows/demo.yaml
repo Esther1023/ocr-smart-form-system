@@ -14,7 +14,6 @@ jobs:
       - run: ls -al
       - run: echo $(pwd)
       - run: python3 -V
-      - run: sudo apt-get install -y python3-venv
       - run: python3 -m venv venv
-      - run: source venv/bin/activate && pip install -r deal/requirements.txt
+      - run: source venv/bin/activate && pip install setuptools --upgrade && pip install -r deal/requirements.txt
       - run: echo "🔎 The name of your branch is ${{ gitea.ref }} and your repository is ${{ gitea.repository }}."
