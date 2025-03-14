@@ -4,7 +4,7 @@ on: [push]
 
 jobs:
   Explore-Gitea-Actions:
-    runs-on: dev:latest
+    runs-on: ubuntu-20.04
     steps:
     - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
     # - name: Install Ansible
