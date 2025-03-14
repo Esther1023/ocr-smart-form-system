@@ -7,15 +7,16 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
     - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
-    - name: Install Ansible
-      run: sudo apt-get update && sudo apt-get install -y ansible
-    - name: Configure SSH
-      run: |
-        mkdir -p ~/.ssh
-        echo "${{ secrets.SSH_PRIVATE_KEY }}" | tr -d '\r' > ~/.ssh/id_rsa
-        chmod 600 ~/.ssh/id_rsa
-        ssh-keyscan -H 10.0.0.111 >> ~/.ssh/known_hosts
-    - name: Run Ansible playbook
-      run: ansible -i 10.0.0.111, all -m ping
+    - run: echo " ${{ secrets.LIXIANGYU }}"
+    # - name: Install Ansible
+    #   run: sudo apt-get update && sudo apt-get install -y ansible
+    # - name: Configure SSH
+    #   run: |
+    #     mkdir -p ~/.ssh
+    #     echo "${{ secrets.SSH_PRIVATE_KEY }}" | tr -d '\r' > ~/.ssh/id_rsa
+    #     chmod 600 ~/.ssh/id_rsa
+    #     ssh-keyscan -H 10.0.0.111 >> ~/.ssh/known_hosts
+    # - name: Run Ansible playbook
+    #   run: ansible -i 10.0.0.111, all -m ping
 
 
