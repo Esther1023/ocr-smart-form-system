@@ -7,9 +7,9 @@ jobs:
     runs-on: ubuntu-20.04-slim
     steps:
     - name : set apt source
-      run: sudo sed -i 's/archive.ubuntu.com/mirrors.aliyun.com/g' /etc/apt/sources.list
+      run: sed -i 's/archive.ubuntu.com/mirrors.aliyun.com/g' /etc/apt/sources.list
     - name : install python3
-      run: sudo apt-get update && sudo apt-get install -y python3 python3-pip
+      run:  apt-get update && apt-get install -y python3 python3-pip
     - name : set pip source
       run: pip3 config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
     - name : install ansible
