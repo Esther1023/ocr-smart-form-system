@@ -18,5 +18,18 @@ jobs:
         ssh-keyscan -H 10.0.0.111 >> ~/.ssh/known_hosts
     - name: Run Ansible playbook
       run: ansible -i 10.0.0.111, all -m ping
+    - name: run ansible 
+      run: ansible -i 10.0.0.111, all -m shell -a "cd /root/code/zxl/word_template_plugin && git pull"
+    - name: run ansible
+      run: ansible -i 10.0.0.111, all -m shell -a "systemctl restart deal"
+    - name: check port
+      run: |
+        response=$(curl --write-out '%{http_code}' --silent --output /dev/null http://10.0.0.111:5001/test)
+        if [ "$response" -eq 200 ]; then
+          echo "Service is running normally."
+        else
+          echo "Service is not running normally. HTTP status code: $response"
+          exit 1
+        fi
 
 

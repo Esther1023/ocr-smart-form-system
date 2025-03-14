@@ -42,6 +42,9 @@ def load_customer_data():
 def index():
     return render_template('index.html', last_import_time=last_import_time)
 
+@app.route('/test', methods=['GET'])
+def test():
+    return 'Hello, World!'
 @app.route('/upload_excel', methods=['POST'])
 def upload_excel():
     global last_import_time
