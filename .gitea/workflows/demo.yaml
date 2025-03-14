@@ -6,14 +6,10 @@ jobs:
   Explore-Gitea-Actions:
     runs-on: ubuntu-20.04
     steps:
-      - run: echo "🎉 The job was automatically triggered by a ${{ gitea.event_name }} event."
-      - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by Gitea!"
-      - run: git clone https://git.home.lewwen.top/liwenwen/deal.git
-      - run: ls -al
-      - run: cd deal && ls -al
-      - run: ls -al
-      - run: echo $(pwd)
-      - run: python3 -V
-      - run: python3 -m venv venv
-      - run: source venv/bin/activate && pip3 install setuptools --upgrade && pip3 install -r deal/requirements.txt
-      - run: echo "🔎 The name of your branch is ${{ gitea.ref }} and your repository is ${{ gitea.repository }}."
+    - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
+    - name: Check out repository code
+      uses: actions/checkout@v4
+    - name: List files in the repository
+      run: ls -a ${{ github.workspace }}
+    
+    
