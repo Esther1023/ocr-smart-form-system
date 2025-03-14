@@ -4,11 +4,10 @@ on: [push]
 
 jobs:
   Explore-Gitea-Actions:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-20.04_ansible
     steps:
     - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
-    # - name: Install Ansible
-    #   run: sudo apt-get update && sudo apt-get install -y ansible
+   
     - name: Configure SSH
       run: |
         mkdir -p ~/.ssh
