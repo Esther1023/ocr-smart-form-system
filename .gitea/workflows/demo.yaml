@@ -4,8 +4,12 @@ on: [push]
 
 jobs:
   Explore-Gitea-Actions:
-    runs-on: ubuntu-20.04_ansible
+    runs-on: ubuntu-20.04-slim
     steps:
+    - name : set pip source
+      run: pip3 config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
+    - name : install ansible
+      run: pip3 install ansible
     - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
     # - name: Install Ansible
     #   run: sudo apt-get update && sudo apt-get install -y ansible
