@@ -4,10 +4,10 @@ on: [push]
 
 jobs:
   Explore-Gitea-Actions:
-    runs-on: ubuntu-20.04-slim
+    runs-on: ubuntu-20.04
     steps:
     - name : set apt source
-      run: sed -i 's/archive.ubuntu.com/mirrors.aliyun.com/g' /etc/apt/sources.list
+      run: sed -i 's|http://deb.debian.org/debian|https://mirrors.aliyun.com/debian|g' /etc/apt/sources.list
     - name : install python3
       run:  apt-get update && apt-get install -y python3 python3-pip
     - name : set pip source
