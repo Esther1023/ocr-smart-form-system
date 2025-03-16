@@ -129,24 +129,27 @@ def query_customer():
         logger.error(f"查询出错: {str(e)}")
         return jsonify({'error': f'查询出错: {str(e)}'}), 500
 
-@app.route('/<template_name>')
+@app.route('/docx_templates/<template_name>')
 def get_template(template_name):
-    if (template_name.endswith('.docx')):
-        try:
-            # 从docx_templates目录加载模板文件
-            template_path = os.path.join(os.getcwd(), 'templates', 'docx_templates', template_name)
-            if os.path.exists(template_path):
-                return send_file(
-                    template_path,
-                    as_attachment=False,  # 不作为附件发送，这样浏览器不会下载而是直接传给前端
-                    mimetype='application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-                )
+    if not template_name.endswith('.docx'):
+        return '不支持的文件类型', 400
+
+    try:
+        # 从docx_templates目录加载模板文件
+        template_path = os.path.join(os.getcwd(), 'templates', 'docx_templates', template_name)
+        if not os.path.exists(template_path):
             logger.error(f"模板文件不存在: {template_path}")
             return '模板文件不存在', 404
-        except Exception as e:
-            logger.error(f"模板文件访问错误: {str(e)}")
-            return '模板文件访问错误', 500
-    return '不支持的文件类型', 400
+
+        logger.info(f"正在加载模板文件: {template_path}")
+        return send_file(
+            template_path,
+            as_attachment=False,  # 不作为附件发送，这样浏览器不会下载而是直接传给前端
+            mimetype='application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+        )
+    except Exception as e:
+        logger.error(f"模板文件访问错误: {str(e)}")
+        return '模板文件访问错误', 500
 
 @app.route('/generate', methods=['POST'])
 def generate():
@@ -177,19 +180,16 @@ def generate():
         template_file.save(temp_template.name)
         logger.info(f"模板文件已保存到临时文件: {temp_template.name}")
         
-        # 确保文件已正确保存
-        if not os.path.exists(temp_template.name):
-            logger.error("临时文件创建失败")
-            return '文件上传失败，请重试', 500
-            
-        if os.path.getsize(temp_template.name) == 0:
-            logger.error("上传的文件为空")
-            return '上传的文件为空，请重试', 400
-
         # 获取表单数据
         form_data = request.form.to_dict()
+        
+        # 处理多选值
+        contract_types = request.form.getlist('contract_type')
+        if contract_types:
+            form_data['contract_types'] = ', '.join(contract_types)
+        
         logger.info(f"接收到的表单数据: {form_data}")
-
+        
         # 创建临时文件用于保存生成的合同
         temp_output = tempfile.NamedTemporaryFile(suffix='.docx', delete=False)
         logger.info(f"创建输出临时文件: {temp_output.name}")
@@ -203,7 +203,7 @@ def generate():
         return send_file(
             output_path,
             as_attachment=True,
-            download_name=f"{form_data['start_year']}-{form_data['end_year']}年{form_data['company_name']}-帆软简道云续费合同.docx",
+            download_name=f"{form_data['start_year']}-{form_data['end_year']}+{form_data['company_name']}+帆软简道云续费合同+{datetime.now().strftime('%Y%m%d')}.docx",
             mimetype='application/vnd.openxmlformats-officedocument.wordprocessingml.document'
         )
 

@@ -57,6 +57,20 @@ class TemplateHandler:
         # 设置固定税率（带百分号）
         context['tax_rate'] = '6%'
         
+        # 处理合同类型
+        contract_types = context.get('contract_types', ['续费'])
+        if isinstance(contract_types, str):
+            contract_types = [contract_types]
+        context['contract_types'] = ', '.join(contract_types)
+        
+        # 处理表格行数
+        table_row_count = int(context.get('table_row_count', '1'))
+        if table_row_count == 2:
+            # 复制第一行的数据到第二行
+            context['second_row'] = 'true'
+        else:
+            context['second_row'] = 'false'
+        
         # 渲染模板
         self.doc.render(context)
         
@@ -65,7 +79,7 @@ class TemplateHandler:
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             filename = os.path.splitext(os.path.basename(self.template_path))[0]
             output_path = f"{filename}_{timestamp}.docx"
-
+    
         # Save the modified document
         self.doc.save(output_path)
         return output_path

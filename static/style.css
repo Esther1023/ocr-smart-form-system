@@ -470,3 +470,48 @@ textarea.form-control {
         flex: 1;
     }
 }
+
+.checkbox-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-top: 8px;
+}
+
+.checkbox-group label {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0;
+    cursor: pointer;
+}
+
+.checkbox-group input[type="checkbox"] {
+    margin-right: 6px;
+}
+
+/* 表格续费类型样式 */
+.renewal-type-container {
+    margin-top: 15px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 15px;
+    background-color: var(--background-color);
+}
+
+.renewal-type-title {
+    font-weight: 500;
+    margin-bottom: 12px;
+    color: var(--primary-color);
+}
+
+.renewal-type-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.renewal-type-label {
+    font-size: 14px;
+    color: var(--text-color);
+}
