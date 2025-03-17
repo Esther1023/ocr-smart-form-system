@@ -727,6 +727,7 @@
             }
             
             // 提交表单
+            // 提交表单
             fetch('/generate', {
                 method: 'POST',
                 body: formData
@@ -734,7 +735,15 @@
             .then(response => {
                 if (!response.ok) {
                     return response.text().then(text => {
-                        throw new Error(text || '生成合同失败');
+                        console.error('服务器响应错误:', response.status, text);
+                        // 尝试解析JSON错误信息
+                        try {
+                            const errorObj = JSON.parse(text);
+                            throw new Error(errorObj.error || `服务器错误 (${response.status}): ${text}`);
+                        } catch (e) {
+                            // 如果不是JSON，直接显示文本
+                            throw new Error(`服务器错误 (${response.status}): ${text}`);
+                        }
                     });
                 }
                 return response.blob();
