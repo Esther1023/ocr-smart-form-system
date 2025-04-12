@@ -97,19 +97,35 @@
                                     <span id="customerType"></span>
                                 </div>
                                 <div class="info-row">
+                                    <label>客户归属战区：</label>
+                                    <span id="customerRegion"></span>
+                                </div>
+                                <div class="info-row">
                                     <label>续费责任销售：</label>
                                     <span id="salesPerson"></span>
                                 </div>
                                 <div class="info-row">
-                                    <label>版本：</label>
-                                    <span id="version"></span>
+                                    <label>简道云账号：</label>
+                                    <span id="jdyAccountInfo"></span>
                                 </div>
                                 <div class="info-row">
                                     <label>版本到期时间：</label>
                                     <span id="expiryDate"></span>
                                 </div>
                                 <div class="info-row">
-                                    <label>ARR：</label>
+                                    <label>版本：</label>
+                                    <span id="version"></span>
+                                </div>
+                                <div class="info-row">
+                                    <label>账号数量：</label>
+                                    <span id="accountCount"></span>
+                                </div>
+                                <div class="info-row">
+                                    <label>付费中账号数量：</label>
+                                    <span id="paidAccountCount"></span>
+                                </div>
+                                <div class="info-row">
+                                    <label>应续ARR：</label>
                                     <span id="uidArr"></span>
                                 </div>
                             </div>
@@ -693,9 +709,13 @@
                 // 显示客户信息
                 document.getElementById('companyName').textContent = data.company_name || '';
                 document.getElementById('customerType').textContent = data.customer_type || '';
+                document.getElementById('customerRegion').textContent = data.customer_region || '';
                 document.getElementById('salesPerson').textContent = data.sales || '';
-                document.getElementById('version').textContent = data.version || '';
+                document.getElementById('jdyAccountInfo').textContent = data.jdy_account || '';
                 document.getElementById('expiryDate').textContent = data.expiry_date || '';
+                document.getElementById('version').textContent = data.version || '';
+                document.getElementById('accountCount').textContent = data.account_count || '';
+                document.getElementById('paidAccountCount').textContent = data.paid_account_count || '';
                 document.getElementById('uidArr').textContent = data.uid_arr || '';
 
                 // 自动填充公司名称
