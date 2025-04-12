@@ -17,7 +17,7 @@ body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     background-color: var(--background-color);
     color: var(--text-color);
-    line-height: 1.7;
+    line-height: 2.0;
 }
 
 .container {
@@ -384,7 +384,7 @@ textarea.form-control {
     white-space: pre-wrap;
     word-break: break-all;
     font-size: 13px;    /* 内容字体稍微大一点 */
-    line-height: 1.4;
+    line-height: 1.5;
 }
 
 .timeline-item::before {
