@@ -1,12 +1,12 @@
 :root {
-    --primary-color: #9B7CB9;
-    --primary-hover: #8A6BA8;
-    --secondary-color: #E0A899;
-    --secondary-hover: #D49687;
+    --primary-color: #E6C17D;
+    --primary-hover: #D4B06C;
+    --secondary-color: #F0D6A3;
+    --secondary-hover: #E2C892;
     --text-color: #4A4A4A;
-    --border-color: #E8E8E8;
-    --background-color: #FAF9FC;
-    --card-background: #FFFFFF;
+    --border-color: #F5E6C3;
+    --background-color: #FFFBF0;
+    --card-background: #FFFDF5;
     --success-color: #52c41a;
     --error-color: #f5222d;
 }
@@ -21,12 +21,15 @@ body {
 }
 
 .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 30px;
+    max-width: 1600px;
+    margin-right: 0;
+    margin-left: auto;
+    padding: 20px;
+    margin-top: 0;
 }
 
 .header {
+    display: none;
     text-align: center;
     margin-bottom: 30px;
 }
@@ -57,8 +60,10 @@ body {
     background: var(--card-background);
     border-radius: 12px;
     padding: 30px;
-    box-shadow: 0 4px 20px rgba(155, 124, 185, 0.12);
-    border: 1px solid rgba(155, 124, 185, 0.15);
+    box-shadow: 0 4px 20px rgba(184, 134, 11, 0.12);
+    border: 1px solid rgba(184, 134, 11, 0.15);
+    margin: 20px 0;
+    min-height: calc(100vh - 100px);
 }
 
 .form-section {
