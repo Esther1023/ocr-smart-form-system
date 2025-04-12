@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, send_file, jsonify
+from flask import Flask, render_template, request, send_file, jsonify, redirect, url_for, session
 from template_handler import TemplateHandler
 import os
 import tempfile
@@ -14,6 +14,7 @@ logging.basicConfig(filename=log_file, level=logging.INFO, format='%(asctime)s %
 logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
+app.secret_key = 'your_secret_key'  # 用于会话加密
 
 # 存储最后导入时间
 last_import_time = None
@@ -23,6 +24,33 @@ last_import_time = None
 def add_security_headers(response):
     response.headers['Content-Security-Policy'] = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'"
     return response
+
+# 登录页面
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        if username == 'admin' and password == 'password':  # 简单的用户名密码验证
+            session['logged_in'] = True
+            return redirect(url_for('index'))
+        return render_template('login.html', error='用户名或密码错误')
+    return render_template('login.html')
+
+# 登出功能
+@app.route('/logout')
+def logout():
+    session.pop('logged_in', None)
+    return redirect(url_for('login'))
+
+# 登录保护装饰器
+def login_required(func):
+    def wrapper(*args, **kwargs):
+        if not session.get('logged_in'):
+            return redirect(url_for('login'))
+        return func(*args, **kwargs)
+    wrapper.__name__ = func.__name__
+    return wrapper
 
 # 加载Excel数据
 def load_customer_data():
@@ -39,6 +67,7 @@ def load_customer_data():
         return None
 
 @app.route('/')
+@login_required
 def index():
     return render_template('index.html', last_import_time=last_import_time)
 
@@ -46,6 +75,7 @@ def index():
 def test():
     return 'Hello, World!'
 @app.route('/upload_excel', methods=['POST'])
+@login_required
 def upload_excel():
     global last_import_time
     try:
@@ -79,6 +109,7 @@ def get_last_import_time():
     return jsonify({'last_import_time': last_import_time})
 
 @app.route('/query_customer', methods=['POST'])
+@login_required
 def query_customer():
     try:
         if not request.json or 'jdy_id' not in request.json:
@@ -152,6 +183,7 @@ def get_template(template_name):
         return '模板文件访问错误', 500
 
 @app.route('/generate', methods=['POST'])
+@login_required
 def generate():
     temp_template = None
     temp_output = None
