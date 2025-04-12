@@ -706,20 +706,27 @@
                 const data = await response.json();
                 console.log('查询结果:', data); // 调试输出
 
+                if (!data.results || data.results.length === 0) {
+                    throw new Error('未找到客户信息');
+                }
+
+                // 使用第一个匹配结果
+                const customerData = data.results[0];
+
                 // 显示客户信息
-                document.getElementById('companyName').textContent = data.company_name || '';
-                document.getElementById('customerType').textContent = data.customer_type || '';
-                document.getElementById('customerRegion').textContent = data.customer_region || '';
-                document.getElementById('salesPerson').textContent = data.sales || '';
-                document.getElementById('jdyAccountInfo').textContent = data.jdy_account || '';
-                document.getElementById('expiryDate').textContent = data.expiry_date || '';
-                document.getElementById('version').textContent = data.version || '';
-                document.getElementById('accountCount').textContent = data.account_count || '';
-                document.getElementById('paidAccountCount').textContent = data.paid_account_count || '';
-                document.getElementById('uidArr').textContent = data.uid_arr || '';
+                document.getElementById('companyName').textContent = customerData.company_name || '';
+                document.getElementById('customerType').textContent = customerData.customer_type || '';
+                document.getElementById('customerRegion').textContent = customerData.customer_region || '';
+                document.getElementById('salesPerson').textContent = customerData.sales || '';
+                document.getElementById('jdyAccountInfo').textContent = customerData.jdy_account || '';
+                document.getElementById('expiryDate').textContent = customerData.expiry_date || '';
+                document.getElementById('version').textContent = customerData.version || '';
+                document.getElementById('accountCount').textContent = customerData.account_count || '';
+                document.getElementById('paidAccountCount').textContent = customerData.paid_account_count || '';
+                document.getElementById('uidArr').textContent = customerData.uid_arr || '';
 
                 // 自动填充公司名称
-                document.querySelector('[name="company_name"]').value = data.company_name || '';
+                document.querySelector('[name="company_name"]').value = customerData.company_name || '';
 
                 // 显示客户信息框
                 document.getElementById('customerInfo').style.display = 'block';

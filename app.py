@@ -113,48 +113,93 @@ def get_last_import_time():
 def query_customer():
     try:
         if not request.json or 'jdy_id' not in request.json:
+            logger.warning("请求中缺少jdy_id参数")
             return jsonify({'error': '请提供简道云账号'}), 400
             
         jdy_id = request.json['jdy_id']
-        if not jdy_id:
-            return jsonify({'error': '请提供简道云账号'}), 400
+        logger.info(f"开始查询简道云账号: {jdy_id}")
+        
+        # 检查文件是否存在
+        excel_path = '六大战区简道云客户.xlsx'
+        if not os.path.exists(excel_path):
+            logger.error(f"文件不存在: {excel_path}")
+            return jsonify({'error': '数据文件不存在'}), 500
 
-        df = load_customer_data()
-        if df is None:
-            return jsonify({'error': '数据加载失败'}), 500
+        try:
+            df = pd.read_excel(excel_path)
+            logger.info(f"成功读取Excel文件，共{len(df)}行数据")
+        except Exception as e:
+            logger.error(f"Excel读取错误: {str(e)}")
+            return jsonify({'error': '数据文件读取失败'}), 500
 
-        # 查找匹配的客户
-        matching_rows = df[df['简道云账号'] == jdy_id]
+        if '简道云账号' not in df.columns:
+            logger.error("Excel文件中缺少'简道云账号'列")
+            return jsonify({'error': '数据格式错误：缺少简道云账号列'}), 500
+        
+        # 使用str.contains进行模糊匹配
+        matching_rows = df[df['简道云账号'].astype(str).str.contains(str(jdy_id), case=False, na=False)]
         if matching_rows.empty:
+            logger.info(f"未找到匹配的客户信息，查询ID: {jdy_id}")
             return jsonify({'error': '未找到客户信息'}), 404
 
-        customer_data = matching_rows.iloc[0]
-        
-        # 打印客户数据以便调试
-        logger.info(f"客户数据: {customer_data}")
-        logger.info(f"列名: {df.columns.tolist()}")
-        
-        # 处理日期
-        expiry_date = ''
-        if '版本到期时间' in customer_data and pd.notna(customer_data['版本到期时间']):
-            expiry_date = pd.to_datetime(customer_data['版本到期时间']).strftime('%Y年%m月%d日')
-        
-        # 构建响应
-        response = {
-            'company_name': str(customer_data.get('公司名称', '')),
-            'customer_type': str(customer_data.get('客户类型', '')),
-            'version': str(customer_data.get('版本', '')),
-            'expiry_date': expiry_date,
-            'uid_arr': f"{str(customer_data.get('UID-ARR', '0'))}元",
-        }
+        # 处理多条匹配记录
+        results = []
+        for _, customer_data in matching_rows.iterrows():
+            # 处理版本和相关信息
+            version = str(customer_data.get('版本', ''))
+            company_name = str(customer_data.get('公司名称', ''))
+            customer_type = str(customer_data.get('客户类型', ''))
+            customer_region = str(customer_data.get('客户归属战区', ''))
+            sales = str(customer_data.get('续费责任销售', ''))
+            account_count = str(customer_data.get('账号数量', ''))
+            paid_account_count = str(customer_data.get('付费中账号数量', ''))
+            
+            logger.info(f"处理客户数据: {customer_data['简道云账号']}, 公司名称: {company_name}, 客户类型: {customer_type}, "
+                      f"客户归属战区: {customer_region}, 续费责任销售: {sales}, 版本: {version}, "
+                      f"账号数量: {account_count}, 付费中账号数量: {paid_account_count}")
+            
+            # 如果是免费版，不显示到期时间和ARR
+            if '免费' in version:
+                expiry_date = ''
+                arr_display = ''
+            else:
+                # 处理到期时间
+                expiry_date = ''
+                if '版本到期时间' in customer_data and pd.notna(customer_data['版本到期时间']):
+                    try:
+                        expiry_date = pd.to_datetime(customer_data['版本到期时间']).strftime('%Y年%m月%d日')
+                        logger.info(f"版本到期时间: {expiry_date}")
+                    except Exception as e:
+                        logger.warning(f"日期转换错误: {str(e)}")
+                        expiry_date = ''
+                
+                # 处理ARR
+                try:
+                    arr_value = customer_data.get('应续ARR', 0)
+                    if pd.isna(arr_value) or arr_value == '' or float(str(arr_value).replace(',', '')) == 0:
+                        arr_display = '0元'
+                    else:
+                        arr_display = f"{float(str(arr_value).replace(',', ''))}元"
+                    logger.info(f"应续ARR: {arr_display}")
+                except Exception as e:
+                    logger.warning(f"ARR处理错误: {str(e)}")
+                    arr_display = '0元'
+            
+            results.append({
+                'company_name': str(customer_data.get('公司名称', '')),
+                'customer_type': str(customer_data.get('客户类型', '')),
+                'customer_region': str(customer_data.get('客户归属战区', '')),
+                'sales': str(customer_data.get('续费责任销售', '')),
+                'jdy_account': str(customer_data.get('简道云账号', '')),
+                'expiry_date': expiry_date,
+                'version': version,
+                'account_count': str(customer_data.get('账号数量', '')),
+                'paid_account_count': str(customer_data.get('付费中账号数量', '')),
+                'uid_arr': arr_display
+            })
 
-        # 根据条件判断续费责任销售
-        arr_str = str(customer_data.get('UID-ARR', '0')).replace(',', '')
-        arr = float(arr_str) if arr_str.replace('.', '').isdigit() else 0
-        sales = str(customer_data.get('续费责任销售', ''))
-        response['sales'] = sales or 'Esther.Zhu'
-
-        return jsonify(response)
+        logger.info(f"查询成功，找到{len(results)}条匹配记录")
+        return jsonify({'results': results})
 
     except Exception as e:
         logger.error(f"查询出错: {str(e)}")
