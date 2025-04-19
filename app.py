@@ -90,7 +90,7 @@ def upload_excel():
             return jsonify({'error': '请上传Excel文件(.xlsx)'}), 400
 
         # 保存文件
-        file.save('十大战区公有云客户续费清单_20250307014553.xlsx')
+        file.save('六大战区简道云客户.xlsx')
         
         # 更新导入时间
         last_import_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
