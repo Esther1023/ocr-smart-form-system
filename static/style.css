@@ -18,7 +18,7 @@
     left: 20px;
     bottom: 80px;
     width: 330px;
-    max-height: 80px;
+    max-height: 78px;
     overflow-y: auto;
     background-color: #fff;
     border-radius: 8px;
@@ -86,7 +86,7 @@ body {
     margin-right: 0;
     margin-left: auto;
     padding: 20px;
-    margin-top: 0;
+    margin-top: 10;
 }
 
 .header {
@@ -378,9 +378,10 @@ textarea.form-control {
 
 .input-group {
     display: flex;
-    gap: 12px;
+    gap: 40px;
     align-items: center;
     flex-wrap: nowrap;  /* 防止换行 */
+    margin-right: 300px; /* 与右侧快捷按钮保持距离 */
 }
 
 .input-group .form-control {
@@ -391,6 +392,27 @@ textarea.form-control {
 .input-group .btn {
     white-space: nowrap;
     margin: 0;  /* 移除按钮间距 */
+}
+
+.input-group .btn-shortcut {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 500;
+    margin-left: 5px;
+    transition: all 0.3s ease;
+    text-align: center;
+    line-height: 1.2;
+    min-width: 80px;
+}
+
+.input-group .btn-shortcut:hover {
+    background-color: var(--primary-hover);
+    transform: translateY(-1px);
 }
 
 @media (max-width: 768px) {
@@ -568,6 +590,50 @@ textarea.form-control {
     font-weight: 500;
     margin-bottom: 12px;
     color: var(--primary-color);
+}
+
+/* 快捷按钮样式 */
+.shortcut-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    width: 80px;
+}
+
+.btn-shortcut {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 15px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    text-align: center;
+}
+
+.btn-shortcut:hover {
+    background-color: var(--primary-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+@media (max-width: 768px) {
+    .shortcut-buttons {
+        position: static;
+        margin-bottom: 20px;
+    }
+    
+    .btn-shortcut {
+        flex: 1;
+        text-align: center;
+    }
 }
 
 .renewal-type-row {

@@ -18,6 +18,49 @@ function fetchExpiringCustomers() {
 }
 
 // 创建并显示即将过期客户提示框
+// 快捷按钮链接配置
+document.addEventListener('DOMContentLoaded', function() {
+    // 配置快捷按钮的链接
+    const shortcutLinks = {
+        'btn-hetiao': 'https://www.jiandaoyun.com/dashboard#/app/5a015dd12d85443cacd1b893/form/5a0186552d85443cacd4ef18',  // 合票链接
+        'btn-sa': 'https://dc.jdydevelop.com/sa?redirect_uri=%2Finfo_search%2Fuser_search',      // SA链接
+        'btn-huikuan': 'https://crm.finereporthelp.com/WebReport/decision/view/report?viewlet=finance/jdy_confirm/bank_income_list_cofirm.cpt&op=write',  // 回款链接
+        'btn-xiadan': 'https://www.jiandaoyun.com/dashboard#/app/5a015dd12d85443cacd1b893/form/5a0186552d85443cacd4ef18',   // 下单链接
+        'btn-qiwei': 'https://open.work.weixin.qq.com/wwopen/login?etype=noTtl#/payment/cashier',                                           // 企微链接
+        'btn-daike': 'https://www.jiandaoyun.com/dashboard#/app/5a015dd12d85443cacd1b893/form/6462df15ad96a800087b1f8f'    // 代客链接
+    };
+    
+    // 内联快捷按钮的链接配置（与顶部快捷按钮使用相同的链接）
+    const inlineShortcutLinks = {
+        'btn-hetiao-inline': 'https://www.jiandaoyun.com/dashboard#/app/5a015dd12d85443cacd1b893/form/5a0186552d85443cacd4ef18',  // 合票链接
+        'btn-sa-inline': 'https://dc.jdydevelop.com/sa?redirect_uri=%2Finfo_search%2Fuser_search',      // SA链接
+        'btn-huikuan-inline': 'https://crm.finereporthelp.com/WebReport/decision/view/report?viewlet=finance/jdy_confirm/bank_income_list_cofirm.cpt&op=write',  // 回款链接
+        'btn-xiadan-inline': 'https://www.jiandaoyun.com/dashboard#/app/5a015dd12d85443cacd1b893/form/5a0186552d85443cacd4ef18',   // 下单链接
+        'btn-qiwei-inline': 'https://open.work.weixin.qq.com/wwopen/login?etype=noTtl#/payment/cashier',                                           // 企微链接
+        'btn-daike-inline': 'https://www.jiandaoyun.com/dashboard#/app/5a015dd12d85443cacd1b893/form/6462df15ad96a800087b1f8f'    // 代客链接
+    };
+    
+    // 为顶部快捷按钮添加点击事件
+    Object.keys(shortcutLinks).forEach(btnId => {
+        const btn = document.getElementById(btnId);
+        if (btn) {
+            btn.addEventListener('click', function() {
+                window.open(shortcutLinks[btnId], '_blank');
+            });
+        }
+    });
+    
+    // 为内联快捷按钮添加点击事件
+    Object.keys(inlineShortcutLinks).forEach(btnId => {
+        const btn = document.getElementById(btnId);
+        if (btn) {
+            btn.addEventListener('click', function() {
+                window.open(inlineShortcutLinks[btnId], '_blank');
+            });
+        }
+    });}
+);
+
 function showExpiringCustomersAlert(customers) {
     // 检查是否已存在提示框，如果存在则移除
     const existingAlert = document.querySelector('.expiring-customers-alert');
