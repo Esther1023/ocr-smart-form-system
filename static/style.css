@@ -9,6 +9,67 @@
     --card-background: #FFFDF5;
     --success-color: #52c41a;
     --error-color: #f5222d;
+    --warning-color: #faad14;
+}
+
+/* 过期客户提示框样式 */
+.expiring-customers-alert {
+    position: fixed;
+    left: 20px;
+    bottom: 80px;
+    width: 330px;
+    max-height: 80px;
+    overflow-y: auto;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+    border-left: 4px solid var(--warning-color);
+    z-index: 1000;
+    font-size: 14px;
+}
+
+.expiring-customers-header {
+    display: none;
+}
+
+.expiring-customers-header h4 {
+    margin: 0;
+    color: var(--warning-color);
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+}
+
+.expiring-customers-header h4:before {
+    content: '⚠️';
+    margin-right: 8px;
+}
+
+.expiring-customers-header .close-btn {
+    background: none;
+    border: none;
+    color: #999;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.expiring-customers-body {
+    padding: 8px 15px;
+}
+.expiring-customer-item {
+    padding: 6px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.expiring-customer-item:last-child {
+    border-bottom: none;
+}
+
+.expiring-customer-date {
+    font-weight: bold;
+    color: var(--warning-color);
+    margin-bottom: 3px;
+
 }
 
 body {

@@ -55,7 +55,7 @@ def login_required(func):
 # 加载Excel数据
 def load_customer_data():
     global last_import_time
-    excel_path = '十大战区公有云客户续费清单_20250307014553.xlsx'
+    excel_path = '六大战区简道云客户.xlsx'
     try:
         if not os.path.exists(excel_path):
             logger.error(f"文件不存在: {excel_path}")
@@ -107,6 +107,60 @@ def upload_excel():
 @app.route('/get_last_import_time')
 def get_last_import_time():
     return jsonify({'last_import_time': last_import_time})
+
+@app.route('/get_expiring_customers')
+@login_required
+def get_expiring_customers():
+    try:
+        # 检查文件是否存在
+        excel_path = '六大战区简道云客户.xlsx'
+        if not os.path.exists(excel_path):
+            logger.error(f"文件不存在: {excel_path}")
+            return jsonify({'error': '数据文件不存在'}), 500
+
+        try:
+            df = pd.read_excel(excel_path)
+            logger.info(f"成功读取Excel文件，共{len(df)}行数据")
+        except Exception as e:
+            logger.error(f"Excel读取错误: {str(e)}")
+            return jsonify({'error': '数据文件读取失败'}), 500
+
+        if '版本到期时间' not in df.columns or '简道云账号' not in df.columns or '公司名称' not in df.columns:
+            logger.error("Excel文件中缺少必要列")
+            return jsonify({'error': '数据格式错误：缺少必要列'}), 500
+        
+        # 获取当前日期
+        now = datetime.now()
+        
+        # 计算一周后的日期
+        one_week_later = now + pd.Timedelta(days=7)
+        
+        # 筛选出一周内将要过期的客户
+        expiring_customers = []
+        for _, row in df.iterrows():
+            if pd.notna(row['版本到期时间']):
+                try:
+                    expiry_date = pd.to_datetime(row['版本到期时间'])
+                    # 如果过期时间在当前日期和一周后之间
+                    if now <= expiry_date <= one_week_later:
+                        expiring_customers.append({
+                            'expiry_date': expiry_date.strftime('%Y年%m月%d日'),
+                            'jdy_account': str(row.get('简道云账号', '')),
+                            'company_name': str(row.get('公司名称', ''))
+                        })
+                except Exception as e:
+                    logger.warning(f"日期转换错误: {str(e)}")
+                    continue
+        
+        # 按过期日期排序
+        expiring_customers.sort(key=lambda x: x['expiry_date'])
+        
+        logger.info(f"找到{len(expiring_customers)}个即将过期的客户")
+        return jsonify({'expiring_customers': expiring_customers})
+
+    except Exception as e:
+        logger.error(f"获取即将过期客户失败: {str(e)}")
+        return jsonify({'error': f'获取即将过期客户失败: {str(e)}'}), 500
 
 @app.route('/query_customer', methods=['POST'])
 @login_required

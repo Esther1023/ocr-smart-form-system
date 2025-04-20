@@ -1,3 +1,93 @@
+// 获取即将过期的客户信息并显示提示框
+function fetchExpiringCustomers() {
+    fetch('/get_expiring_customers')
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                console.error('获取即将过期客户失败:', data.error);
+                return;
+            }
+            
+            if (data.expiring_customers && data.expiring_customers.length > 0) {
+                showExpiringCustomersAlert(data.expiring_customers);
+            }
+        })
+        .catch(error => {
+            console.error('获取即将过期客户错误:', error);
+        });
+}
+
+// 创建并显示即将过期客户提示框
+function showExpiringCustomersAlert(customers) {
+    // 检查是否已存在提示框，如果存在则移除
+    const existingAlert = document.querySelector('.expiring-customers-alert');
+    if (existingAlert) {
+        existingAlert.remove();
+    }
+    
+    // 创建提示框容器
+    const alertContainer = document.createElement('div');
+    alertContainer.className = 'expiring-customers-alert';
+    
+    // 创建提示框头部
+    const alertHeader = document.createElement('div');
+    alertHeader.className = 'expiring-customers-header';
+    
+    const alertTitle = document.createElement('h4');
+    alertTitle.textContent = '即将过期客户提醒';
+    
+    const closeButton = document.createElement('button');
+    closeButton.className = 'close-btn';
+    closeButton.textContent = '×';
+    closeButton.onclick = function() {
+        alertContainer.remove();
+    };
+    
+    alertHeader.appendChild(alertTitle);
+    alertHeader.appendChild(closeButton);
+    
+    // 创建提示框内容
+    const alertBody = document.createElement('div');
+    alertBody.className = 'expiring-customers-body';
+    
+    // 添加客户信息
+    customers.forEach(customer => {
+        const customerItem = document.createElement('div');
+        customerItem.className = 'expiring-customer-item';
+        
+        const dateElement = document.createElement('div');
+        dateElement.className = 'expiring-customer-date';
+        dateElement.textContent = `过期日期: ${customer.expiry_date}`;
+        
+        const accountElement = document.createElement('div');
+        accountElement.textContent = `简道云账号: ${customer.jdy_account}`;
+        
+        const companyElement = document.createElement('div');
+        companyElement.textContent = `公司名称: ${customer.company_name}`;
+        
+        customerItem.appendChild(dateElement);
+        customerItem.appendChild(accountElement);
+        customerItem.appendChild(companyElement);
+        
+        alertBody.appendChild(customerItem);
+    });
+    
+    // 组装提示框
+    // 不添加标题部分，直接添加内容
+    alertContainer.appendChild(alertBody);
+    
+    // 添加到页面
+    document.body.appendChild(alertContainer);
+}
+
+// 页面加载完成后获取即将过期的客户
+document.addEventListener('DOMContentLoaded', function() {
+    // 检查用户是否已登录（通过检查页面上的元素判断）
+    if (document.getElementById('contractForm')) {
+        fetchExpiringCustomers();
+    }
+});
+
 function generateInvoiceInfo() {
     const invoiceType = document.getElementById('invoiceType').value;
     const email = document.getElementById('invoiceEmail').value;
