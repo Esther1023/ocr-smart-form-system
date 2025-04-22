@@ -22,22 +22,21 @@ function fetchExpiringCustomers() {
 document.addEventListener('DOMContentLoaded', function() {
     // 配置快捷按钮的链接
     const shortcutLinks = {
-        'btn-hetiao': 'https://www.jiandaoyun.com/dashboard#/app/5a015dd12d85443cacd1b893/form/5a0186552d85443cacd4ef18',  // 合票链接
+        'btn-hetiao': 'https://bi.jdydevelop.com/webroot/decision#/?activeTab=6ed7a7e6-70b0-4814-9424-35d784d8e686',  // 业绩链接
         'btn-sa': 'https://dc.jdydevelop.com/sa?redirect_uri=%2Finfo_search%2Fuser_search',      // SA链接
         'btn-huikuan': 'https://crm.finereporthelp.com/WebReport/decision/view/report?viewlet=finance/jdy_confirm/bank_income_list_cofirm.cpt&op=write',  // 回款链接
-        'btn-xiadan': 'https://www.jiandaoyun.com/dashboard#/app/5a015dd12d85443cacd1b893/form/5a0186552d85443cacd4ef18',   // 下单链接
+        'btn-xiadan': 'https://open.work.weixin.qq.com/wwopen/developer#/sass/license/service/order/detail?orderid=OI00000FEA3AC66805CA325DABD6AN',   // 接口链接
         'btn-qiwei': 'https://open.work.weixin.qq.com/wwopen/login?etype=noTtl#/payment/cashier',                                           // 企微链接
-        'btn-daike': 'https://www.jiandaoyun.com/dashboard#/app/5a015dd12d85443cacd1b893/form/6462df15ad96a800087b1f8f'    // 代客链接
+        'btn-daike': 'https://bi.finereporthelp.com/webroot/decision?ticket=ST-1661930-gnOi6zSJldUmv-6b6jEx2sT-JPI-passport-cas-5f446496d7-hvvfc#/directory?activeTab=a5a2cd0c-e564-437b-87c4-75d1ae01b79e'    // 看板链接
     };
     
     // 内联快捷按钮的链接配置（与顶部快捷按钮使用相同的链接）
     const inlineShortcutLinks = {
-        'btn-hetiao-inline': 'https://www.jiandaoyun.com/dashboard#/app/5a015dd12d85443cacd1b893/form/5a0186552d85443cacd4ef18',  // 合票链接
+        'btn-hetiao-inline': 'https://bi.jdydevelop.com/webroot/decision#/?activeTab=6ed7a7e6-70b0-4814-9424-35d784d8e686',  // 业绩链接
         'btn-sa-inline': 'https://dc.jdydevelop.com/sa?redirect_uri=%2Finfo_search%2Fuser_search',      // SA链接
         'btn-huikuan-inline': 'https://crm.finereporthelp.com/WebReport/decision/view/report?viewlet=finance/jdy_confirm/bank_income_list_cofirm.cpt&op=write',  // 回款链接
-        'btn-xiadan-inline': 'https://www.jiandaoyun.com/dashboard#/app/5a015dd12d85443cacd1b893/form/5a0186552d85443cacd4ef18',   // 下单链接
-        'btn-qiwei-inline': 'https://open.work.weixin.qq.com/wwopen/login?etype=noTtl#/payment/cashier',                                           // 企微链接
-        'btn-daike-inline': 'https://www.jiandaoyun.com/dashboard#/app/5a015dd12d85443cacd1b893/form/6462df15ad96a800087b1f8f'    // 代客链接
+        'btn-xiadan-inline': 'https://open.work.weixin.qq.com/wwopen/developer#/sass/license/service/order/detail?orderid=OI00000FEA3AC66805CA325DABD6AN',   // 接口链接        'btn-qiwei-inline': 'https://open.work.weixin.qq.com/wwopen/login?etype=noTtl#/payment/cashier',                                           // 企微链接
+        'btn-daike-inline': 'https://bi.finereporthelp.com/webroot/decision?ticket=ST-1661930-gnOi6zSJldUmv-6b6jEx2sT-JPI-passport-cas-5f446496d7-hvvfc#/directory?activeTab=a5a2cd0c-e564-437b-87c4-75d1ae01b79e'    // 看板链接
     };
     
     // 为顶部快捷按钮添加点击事件
@@ -58,8 +57,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 window.open(inlineShortcutLinks[btnId], '_blank');
             });
         }
-    });}
-);
+    });
+});
 
 function showExpiringCustomersAlert(customers) {
     // 检查是否已存在提示框，如果存在则移除
@@ -100,17 +99,21 @@ function showExpiringCustomersAlert(customers) {
         
         const dateElement = document.createElement('div');
         dateElement.className = 'expiring-customer-date';
-        dateElement.textContent = `过期日期: ${customer.expiry_date}`;
+        dateElement.textContent = `${customer.expiry_date}`;
         
         const accountElement = document.createElement('div');
-        accountElement.textContent = `简道云账号: ${customer.jdy_account}`;
+        accountElement.textContent = `${customer.jdy_account}`;
         
         const companyElement = document.createElement('div');
-        companyElement.textContent = `公司名称: ${customer.company_name}`;
+        companyElement.textContent = `${customer.company_name}`;
+        
+        const salesElement = document.createElement('div');
+        salesElement.textContent = `${customer.sales_person || '未指定'}`;
         
         customerItem.appendChild(dateElement);
         customerItem.appendChild(accountElement);
         customerItem.appendChild(companyElement);
+        customerItem.appendChild(salesElement);
         
         alertBody.appendChild(customerItem);
     });
@@ -123,11 +126,156 @@ function showExpiringCustomersAlert(customers) {
     document.body.appendChild(alertContainer);
 }
 
+// 获取未来23-30天内到期的客户信息
+function fetchFutureExpiringCustomers() {
+    fetch('/get_future_expiring_customers')
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                console.error('获取未来即将过期客户失败:', data.error);
+                return;
+            }
+            
+            if ((data.esther_customers && data.esther_customers.length > 0) || 
+                (data.other_customers && data.other_customers.length > 0)) {
+                showFutureExpiringCustomersDashboard(data.esther_customers, data.other_customers);
+            }
+        })
+        .catch(error => {
+            console.error('获取未来即将过期客户错误:', error);
+        });
+}
+
+// 创建并显示未来23-30天内到期客户看板
+function showFutureExpiringCustomersDashboard(estherCustomers, otherCustomers) {
+    // 检查是否已存在看板，如果存在则移除
+    const existingDashboard = document.querySelector('.future-expiring-dashboard');
+    if (existingDashboard) {
+        existingDashboard.remove();
+    }
+    
+    // 创建看板容器
+    const dashboardContainer = document.createElement('div');
+    dashboardContainer.className = 'future-expiring-dashboard';
+    
+    // 创建看板标题 - 只保留关闭按钮，不显示标题
+    const dashboardHeader = document.createElement('div');
+    dashboardHeader.className = 'dashboard-header';
+    
+    const closeButton = document.createElement('button');
+    closeButton.className = 'close-btn';
+    closeButton.textContent = '×';
+    closeButton.onclick = function() {
+        dashboardContainer.remove();
+    };
+    
+    dashboardHeader.appendChild(closeButton);
+    
+    // 创建看板内容
+    const dashboardBody = document.createElement('div');
+    dashboardBody.className = 'dashboard-body';
+    
+    // Esther负责的客户部分
+    if (estherCustomers && estherCustomers.length > 0) {
+        const estherSection = document.createElement('div');
+        estherSection.className = 'customer-section';
+        
+        // 不显示标题
+        // const estherTitle = document.createElement('h4');
+        // estherTitle.textContent = 'Esther朱晓琳负责的客户';
+        // estherSection.appendChild(estherTitle);
+        
+        const estherTable = createCustomerTable(estherCustomers);
+        estherSection.appendChild(estherTable);
+        
+        dashboardBody.appendChild(estherSection);
+    }
+    
+    // 其他销售负责的客户部分
+    if (otherCustomers && otherCustomers.length > 0) {
+        const otherSection = document.createElement('div');
+        otherSection.className = 'customer-section';
+        
+        // 不显示标题
+        // const otherTitle = document.createElement('h4');
+        // otherTitle.textContent = '其他销售负责的客户';
+        // otherSection.appendChild(otherTitle);
+        
+        const otherTable = createCustomerTable(otherCustomers);
+        otherSection.appendChild(otherTable);
+        
+        dashboardBody.appendChild(otherSection);
+    }
+    
+    // 组装看板
+    dashboardContainer.appendChild(dashboardHeader);
+    dashboardContainer.appendChild(dashboardBody);
+    
+    // 添加到页面
+    document.body.appendChild(dashboardContainer);
+}
+
+// 创建客户表格
+function createCustomerTable(customers) {
+    const table = document.createElement('table');
+    table.className = 'customer-table';
+    
+    // 创建表头 (不显示，但保留结构以便CSS控制)
+    const thead = document.createElement('thead');
+    const headerRow = document.createElement('tr');
+    
+    // 判断是否为Esther朱晓琳负责的客户
+    const isEstherCustomers = customers.length > 0 && customers[0].sales_person === 'Esther朱晓琳';
+    
+    // 根据是否为Esther负责的客户决定表头 - 始终包含销售字段以显示续费责任销售
+    // 表头不会显示，但保留结构
+    const headers = ['公司名称', '简道云ID', '过期日期', '销售'];
+    
+    headers.forEach(headerText => {
+        const th = document.createElement('th');
+        th.textContent = ''; // 清空表头文本
+        headerRow.appendChild(th);
+    });
+    
+    thead.appendChild(headerRow);
+    table.appendChild(thead);
+    
+    // 创建表格内容
+    const tbody = document.createElement('tbody');
+    
+    customers.forEach(customer => {
+        const row = document.createElement('tr');
+        
+        const companyCell = document.createElement('td');
+        companyCell.textContent = customer.company_name || '-';
+        row.appendChild(companyCell);
+        
+        const jdyIdCell = document.createElement('td');
+        jdyIdCell.textContent = customer.jdy_account || '-';
+        row.appendChild(jdyIdCell);
+        
+        const dateCell = document.createElement('td');
+        dateCell.textContent = customer.expiry_date || '-';
+        row.appendChild(dateCell);
+        
+        // 始终显示销售列，确保显示续费责任销售
+        const salesCell = document.createElement('td');
+        salesCell.textContent = customer.sales_person || '-';
+        row.appendChild(salesCell);
+        
+        tbody.appendChild(row);
+    });
+    
+    table.appendChild(tbody);
+    return table;
+}
+
 // 页面加载完成后获取即将过期的客户
 document.addEventListener('DOMContentLoaded', function() {
     // 检查用户是否已登录（通过检查页面上的元素判断）
     if (document.getElementById('contractForm')) {
         fetchExpiringCustomers();
+        fetchFutureExpiringCustomers();
     }
 });
 
