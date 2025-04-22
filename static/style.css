@@ -91,12 +91,7 @@
 }
 
 .dashboard-header {
-    display: flex;
-    justify-content: flex-end;
-    padding: 0 5px;
-    background-color: transparent;
-    color: var(--text-color);
-    border-top-right-radius: 8px;
+    display: none;
 }
 
 .dashboard-header .close-btn {
@@ -108,7 +103,7 @@
 }
 
 .dashboard-body {
-    padding: 8px;
+    padding: 50;
     overflow-x: auto;
 }
 
