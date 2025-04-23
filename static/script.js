@@ -96,19 +96,32 @@ function showExpiringCustomersAlert(customers) {
     customers.forEach(customer => {
         const customerItem = document.createElement('div');
         customerItem.className = 'expiring-customer-item';
+        customerItem.style.padding = '2px 0 2px 0';
         
         const dateElement = document.createElement('div');
         dateElement.className = 'expiring-customer-date';
         dateElement.textContent = `${customer.expiry_date}`;
+        dateElement.style.marginTop = '0';
+        dateElement.style.marginBottom = '2px';
         
         const accountElement = document.createElement('div');
         accountElement.textContent = `${customer.jdy_account}`;
+        accountElement.style.marginBottom = '1px';
         
         const companyElement = document.createElement('div');
         companyElement.textContent = `${customer.company_name}`;
+        companyElement.style.marginBottom = '1px';
         
         const salesElement = document.createElement('div');
+        salesElement.className = 'expiring-customer-sales';
         salesElement.textContent = `${customer.sales_person || '未指定'}`;
+        if (customer.sales_person === 'Esther-朱晓琳') {
+            salesElement.classList.add('esther-sales');
+        } else if (customer.sales_person === 'public-公共账号') {
+            salesElement.classList.add('public-sales');
+        }
+        salesElement.style.marginTop = '2px';
+        salesElement.style.marginBottom = '0';
         
         customerItem.appendChild(dateElement);
         customerItem.appendChild(accountElement);
@@ -217,57 +230,40 @@ function showFutureExpiringCustomersDashboard(estherCustomers, otherCustomers) {
 
 // 创建客户表格
 function createCustomerTable(customers) {
-    const table = document.createElement('table');
-    table.className = 'customer-table';
-    
-    // 创建表头 (不显示，但保留结构以便CSS控制)
-    const thead = document.createElement('thead');
-    const headerRow = document.createElement('tr');
-    
-    // 判断是否为Esther朱晓琳负责的客户
-    const isEstherCustomers = customers.length > 0 && customers[0].sales_person === 'Esther朱晓琳';
-    
-    // 根据是否为Esther负责的客户决定表头 - 始终包含销售字段以显示续费责任销售
-    // 表头不会显示，但保留结构
-    const headers = ['公司名称', '简道云ID', '过期日期', '销售'];
-    
-    headers.forEach(headerText => {
-        const th = document.createElement('th');
-        th.textContent = ''; // 清空表头文本
-        headerRow.appendChild(th);
-    });
-    
-    thead.appendChild(headerRow);
-    table.appendChild(thead);
-    
-    // 创建表格内容
-    const tbody = document.createElement('tbody');
-    
+    // 创建一个容器而不是表格，采用卡片式分行展示
+    const container = document.createElement('div');
+    container.className = 'customer-card-list';
     customers.forEach(customer => {
-        const row = document.createElement('tr');
-        
-        const companyCell = document.createElement('td');
-        companyCell.textContent = customer.company_name || '-';
-        row.appendChild(companyCell);
-        
-        const jdyIdCell = document.createElement('td');
-        jdyIdCell.textContent = customer.jdy_account || '-';
-        row.appendChild(jdyIdCell);
-        
-        const dateCell = document.createElement('td');
-        dateCell.textContent = customer.expiry_date || '-';
-        row.appendChild(dateCell);
-        
-        // 始终显示销售列，确保显示续费责任销售
-        const salesCell = document.createElement('td');
-        salesCell.textContent = customer.sales_person || '-';
-        row.appendChild(salesCell);
-        
-        tbody.appendChild(row);
+        const card = document.createElement('div');
+        card.className = 'customer-card-item';
+        // 到期日期（高亮加粗）
+        const dateDiv = document.createElement('div');
+        dateDiv.className = 'customer-card-date';
+        dateDiv.textContent = customer.expiry_date;
+        card.appendChild(dateDiv);
+        // 简道云账号
+        const accountDiv = document.createElement('div');
+        accountDiv.className = 'customer-card-account';
+        accountDiv.textContent = customer.jdy_account;
+        card.appendChild(accountDiv);
+        // 公司名称
+        const companyDiv = document.createElement('div');
+        companyDiv.className = 'customer-card-company';
+        companyDiv.textContent = customer.company_name;
+        card.appendChild(companyDiv);
+        // 销售人员
+        const salesDiv = document.createElement('div');
+        salesDiv.className = 'customer-card-sales';
+        salesDiv.textContent = customer.sales_person || '未指定';
+        if (customer.sales_person === 'Esther-朱晓琳') {
+            salesDiv.classList.add('esther-sales');
+        } else if (customer.sales_person === 'public-公共账号') {
+            salesDiv.classList.add('public-sales');
+        }
+        card.appendChild(salesDiv);
+        container.appendChild(card);
     });
-    
-    table.appendChild(tbody);
-    return table;
+    return container;
 }
 
 // 页面加载完成后获取即将过期的客户

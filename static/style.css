@@ -17,7 +17,7 @@
     position: fixed;
     left: 20px;
     bottom: 80px;
-    width: 330px;
+    width: 335px;
     max-height: 130px; /* 减小高度 */
     overflow-y: auto;
     background-color: #fff;
@@ -67,8 +67,9 @@
 
 .expiring-customer-date {
     font-weight: bold;
-    color: var(--primary-color); /* 统一颜色风格 */
-    margin-bottom: 3px;
+    color: var(--error-color); /* 过期客户日期标红 */
+    font-size: 15px;
+    margin-bottom: 2px;
 }
 
 /* 未来到期客户看板样式 */
@@ -77,7 +78,7 @@
     left: 20px;
     top: 60%;
     transform: translateY(-30%);
-    width: 330px;
+    width: 335px;
     max-height: 300px;
     overflow-y: auto;
     background-color: #fff;
@@ -85,7 +86,7 @@
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
     border-left: 4px solid var(--primary-color);
     z-index: 1000;
-    font-size: 14px;
+    font-size: 12px;
     margin: 0;
     padding: 0;
 }
@@ -104,12 +105,14 @@
 
 .dashboard-body {
     padding: 50;
-    overflow-x: auto;
+    overflow-y: auto;
+    overflow-x: unset;
 }
 
 .customer-section {
     margin-bottom: 20px;
-    overflow-x: auto;
+    overflow-y: unset;
+    overflow-x: unset;
     max-width: 100%;
 }
 
@@ -122,7 +125,8 @@
     border-collapse: collapse;
     margin-bottom: 8px;
     table-layout: auto;
-    overflow-x: auto;
+    overflow-y: unset;
+    overflow-x: unset;
     display: table;
 }
 
@@ -131,7 +135,7 @@
     text-align: center;
     border: 1px solid #eee;
     font-size: 13px;
-    white-space: nowrap;
+    white-space: normal;
 }
 
 .customer-table th {
@@ -620,7 +624,7 @@ textarea.form-control {
 
     .input-group {
         flex-direction: column;
-        gap: 10px;
+        gap: 12px;
     }
     
     .input-group .form-control,
@@ -725,4 +729,70 @@ textarea.form-control {
 .renewal-type-label {
     font-size: 14px;
     color: var(--text-color);
+}
+
+.customer-card-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    padding: 0;
+}
+.customer-card-item {
+    background: transparent;
+    border-radius: 0;
+    box-shadow: none;
+    border-left: 0px solid var(--primary-color);
+    border-bottom: 1px solid #f0f0f0;
+    padding: 10px 0 8px 15px;
+    margin-bottom: 1px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    color: var(--text-color);
+    font-size: 12px;
+    line-height: 2.0;
+    transition: none;
+}
+.customer-card-item:last-child {
+    border-bottom: none;
+}
+.customer-card-item:hover {
+    box-shadow: none;
+    background: transparent;
+}
+.customer-card-date {
+    font-weight: bold;
+    color: var(--error-color); /* 未来客户日期不变，若需标红可改此处 */
+    font-size: 15px;
+    margin-bottom: 2px;
+}
+.customer-card-account {
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 1px;
+    word-break: break-all;
+    padding: 0;
+}
+.customer-card-company {
+    color: #333;
+    font-size: 14px;
+    margin-bottom: 1px;
+    word-break: break-all;
+    padding: 0;
+}
+.customer-card-sales {
+    color: #333;
+    font-size: 14px;
+    margin-top: 0;
+    margin-bottom: 0px;
+    font-style: normal; /* 未来客户销售名不斜体 */
+    padding: 0;
+}
+.expiring-customer-sales.esther-sales,
+.customer-card-sales.esther-sales {
+    color: #1890ff !important;
+    font-style: normal !important;
+}
+.expiring-customer-sales.public-sales,
+.customer-card-sales.public-sales {
+    color: #1890ff !important;
+    font-style: normal !important;
 }
