@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', function() {
         'btn-sa': 'https://dc.jdydevelop.com/sa?redirect_uri=%2Finfo_search%2Fuser_search',      // SA链接
         'btn-huikuan': 'https://crm.finereporthelp.com/WebReport/decision/view/report?viewlet=finance/jdy_confirm/bank_income_list_cofirm.cpt&op=write',  // 回款链接
         'btn-xiadan': 'https://open.work.weixin.qq.com/wwopen/developer#/sass/license/service/order/detail?orderid=OI00000FEA3AC66805CA325DABD6AN',   // 接口链接
-        'btn-qiwei': 'https://open.work.weixin.qq.com/wwopen/login?etype=noTtl#/payment/cashier',                                           // 企微链接
+        'btn-qiwei': 'https://crm.finereporthelp.com/WebReport/decision?#?activeTab=bf50447e-5ce2-4c7f-834e-3e1495df033a',                                           // 快去学习链接
         'btn-daike': 'https://bi.finereporthelp.com/webroot/decision?ticket=ST-1661930-gnOi6zSJldUmv-6b6jEx2sT-JPI-passport-cas-5f446496d7-hvvfc#/directory?activeTab=a5a2cd0c-e564-437b-87c4-75d1ae01b79e'    // 看板链接
     };
     
@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', function() {
         'btn-hetiao-inline': 'https://bi.jdydevelop.com/webroot/decision#/?activeTab=6ed7a7e6-70b0-4814-9424-35d784d8e686',  // 业绩链接
         'btn-sa-inline': 'https://dc.jdydevelop.com/sa?redirect_uri=%2Finfo_search%2Fuser_search',      // SA链接
         'btn-huikuan-inline': 'https://crm.finereporthelp.com/WebReport/decision/view/report?viewlet=finance/jdy_confirm/bank_income_list_cofirm.cpt&op=write',  // 回款链接
-        'btn-xiadan-inline': 'https://open.work.weixin.qq.com/wwopen/developer#/sass/license/service/order/detail?orderid=OI00000FEA3AC66805CA325DABD6AN',   // 接口链接        'btn-qiwei-inline': 'https://open.work.weixin.qq.com/wwopen/login?etype=noTtl#/payment/cashier',                                           // 企微链接
+        'btn-xiadan-inline': 'https://crm.finereporthelp.com/WebReport/decision?#?activeTab=bf50447e-5ce2-4c7f-834e-3e1495df033a',       // 企微链接
         'btn-daike-inline': 'https://bi.finereporthelp.com/webroot/decision?ticket=ST-1661930-gnOi6zSJldUmv-6b6jEx2sT-JPI-passport-cas-5f446496d7-hvvfc#/directory?activeTab=a5a2cd0c-e564-437b-87c4-75d1ae01b79e'    // 看板链接
     };
     
