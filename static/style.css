@@ -275,7 +275,10 @@ body {
     text-align: center;
     line-height: 1.2;
     min-width: 120px;
+<<<<<<< HEAD
     width: 100%;
+=======
+>>>>>>> master
 }
 
 .btn:hover {
@@ -481,7 +484,11 @@ textarea.form-control {
 .input-group .btn-shortcut {
     background-color: var(--primary-color);
     color: white;
+<<<<<<< HEAD
     padding: 10px 15px;
+=======
+    padding: 12px 24px;
+>>>>>>> master
     border: none;
     border-radius: 6px;
     cursor: pointer;
@@ -620,12 +627,20 @@ textarea.form-control {
     
     .btn {
         width: 100%;
+<<<<<<< HEAD
         margin-bottom: 15px;
+=======
+        margin-bottom: 10px;
+>>>>>>> master
     }
 
     .input-group {
         flex-direction: column;
+<<<<<<< HEAD
         gap: 10px;
+=======
+        gap: 12px;
+>>>>>>> master
     }
     
     .input-group .form-control,
@@ -639,7 +654,11 @@ textarea.form-control {
     }
 
     .invoice-buttons .btn {
+<<<<<<< HEAD
         width: 100%;
+=======
+        flex: 1;
+>>>>>>> master
     }
 }
 
@@ -685,7 +704,11 @@ textarea.form-control {
     top: 20px;
     right: 20px;
     z-index: 1000;
+<<<<<<< HEAD
     width: 100px;
+=======
+    width: 80px;
+>>>>>>> master
 }
 
 .btn-shortcut {
@@ -694,7 +717,11 @@ textarea.form-control {
     border: none;
     border-radius: 6px;
     padding: 10px 15px;
+<<<<<<< HEAD
     font-size: 15px;
+=======
+    font-size: 16px;
+>>>>>>> master
     cursor: pointer;
     transition: all 0.3s ease;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
