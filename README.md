@@ -85,7 +85,7 @@ python main.py --template 合同模板.docx --output 新合同.docx --vars \
 "contact_name=张三" \
 "contact_phone=13800138000" \
 "mail_address=浙江省杭州市西湖区xxx路100号" \
-"jdy_account=test@company.com" \
+"jdy_account=123456789ad" \
 "service_years=1" \
 "start_year=2024" \
 "start_month=3" \

@@ -31,7 +31,7 @@ def login():
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
-        if username == 'Esther' and password == '967420':  # 简单的用户名密码验证
+        if (username == 'Esther' and password == '967420') or (username == 'Mia' and password == '123456'):  # 简单的用户名密码验证
             session['logged_in'] = True
             return redirect(url_for('index'))
         return render_template('login.html', error='用户名或密码错误')
@@ -113,7 +113,8 @@ def get_last_import_time():
 def get_future_expiring_customers():
     try:
         # 检查文件是否存在
-        excel_path = '六大战区简道云客户.xlsx'
+        excel_path = os.path.join(os.path.dirname(__file__), '六大战区简道云客户.xlsx')
+        logger.info(f"尝试读取文件: {excel_path}")
         if not os.path.exists(excel_path):
             logger.error(f"文件不存在: {excel_path}")
             return jsonify({'error': '数据文件不存在'}), 500
@@ -183,7 +184,8 @@ def get_future_expiring_customers():
 def get_expiring_customers():
     try:
         # 检查文件是否存在
-        excel_path = '六大战区简道云客户.xlsx'
+        excel_path = os.path.join(os.path.dirname(__file__), '六大战区简道云客户.xlsx')
+        logger.info(f"尝试读取文件: {excel_path}")
         if not os.path.exists(excel_path):
             logger.error(f"文件不存在: {excel_path}")
             return jsonify({'error': '数据文件不存在'}), 500
@@ -237,12 +239,19 @@ def get_expiring_customers():
 @login_required
 def query_customer():
     try:
-        if not request.json or 'jdy_id' not in request.json:
-            logger.warning("请求中缺少jdy_id参数")
-            return jsonify({'error': '请提供简道云账号'}), 400
+        if not request.json or ('jdy_id' not in request.json and 'company_name' not in request.json):
+            logger.warning("请求中缺少查询参数")
+            return jsonify({'error': '请提供简道云账号或公司名称'}), 400
             
-        jdy_id = request.json['jdy_id']
-        logger.info(f"开始查询简道云账号: {jdy_id}")
+        # 获取查询参数
+        jdy_id = request.json.get('jdy_id', '')
+        company_name = request.json.get('company_name', '')
+        
+        # 记录查询参数
+        if jdy_id:
+            logger.info(f"开始通过简道云账号查询: {jdy_id}")
+        if company_name:
+            logger.info(f"开始通过公司名称查询: {company_name}")
         
         # 检查文件是否存在
         excel_path = '六大战区简道云客户.xlsx'
@@ -257,14 +266,23 @@ def query_customer():
             logger.error(f"Excel读取错误: {str(e)}")
             return jsonify({'error': '数据文件读取失败'}), 500
 
-        if '简道云账号' not in df.columns:
-            logger.error("Excel文件中缺少'简道云账号'列")
-            return jsonify({'error': '数据格式错误：缺少简道云账号列'}), 500
+        # 检查必要的列是否存在
+        required_columns = ['简道云账号', '公司名称']
+        for col in required_columns:
+            if col not in df.columns:
+                logger.error(f"Excel文件中缺少'{col}'列")
+                return jsonify({'error': f'数据格式错误：缺少{col}列'}), 500
         
-        # 使用str.contains进行模糊匹配
-        matching_rows = df[df['简道云账号'].astype(str).str.contains(str(jdy_id), case=False, na=False)]
+        # 根据查询条件进行模糊匹配
+        if jdy_id:
+            matching_rows = df[df['简道云账号'].astype(str).str.contains(str(jdy_id), case=False, na=False)]
+        else:
+            matching_rows = df[df['公司名称'].astype(str).str.contains(str(company_name), case=False, na=False)]
+            
         if matching_rows.empty:
-            logger.info(f"未找到匹配的客户信息，查询ID: {jdy_id}")
+            query_type = "简道云账号" if jdy_id else "公司名称"
+            query_value = jdy_id if jdy_id else company_name
+            logger.info(f"未找到匹配的客户信息，查询{query_type}: {query_value}")
             return jsonify({'error': '未找到客户信息'}), 404
 
         # 处理多条匹配记录
@@ -426,4 +444,4 @@ def generate():
             logger.error(f"清理临时文件时发生错误: {str(e)}")
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5001,host='0.0.0.0')
+    app.run(debug=True, port=5001, host='localhost')
