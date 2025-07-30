@@ -39,12 +39,21 @@ else:
 logger = logging.getLogger(__name__)
 
 # 初始化OCR服务（容错处理）
-try:
-    ocr_service = OCRService()
-    logger.info("OCR服务初始化成功")
-except Exception as e:
-    logger.warning(f"OCR服务初始化失败: {str(e)}")
-    ocr_service = None
+def init_ocr_service():
+    """延迟初始化OCR服务"""
+    global ocr_service
+    try:
+        from ocr_service import OCRService
+        ocr_service = OCRService()
+        logger.info("OCR服务初始化成功")
+        return True
+    except Exception as e:
+        logger.warning(f"OCR服务初始化失败: {str(e)}")
+        ocr_service = None
+        return False
+
+# 尝试初始化OCR服务，但不阻塞应用启动
+init_ocr_service()
 
 # 存储最后导入时间
 last_import_time = None
@@ -475,9 +484,14 @@ def generate():
         logger.info(f"创建输出临时文件: {temp_output.name}")
 
         # 处理模板
-        handler = TemplateHandler(temp_template.name)
-        output_path = handler.process_template(form_data, temp_output.name)
-        logger.info(f"合同生成完成，输出文件: {output_path}")
+        try:
+            from template_handler import TemplateHandler
+            handler = TemplateHandler(temp_template.name)
+            output_path = handler.process_template(form_data, temp_output.name)
+            logger.info(f"合同生成完成，输出文件: {output_path}")
+        except ImportError as e:
+            logger.error(f"模板处理器导入失败: {str(e)}")
+            return jsonify({'success': False, 'error': '模板处理功能暂时不可用'}), 503
 
         # 返回生成的文件
         return send_file(
@@ -563,11 +577,8 @@ def ocr_process():
 if __name__ == '__main__':
     # 环境配置
     port = int(os.environ.get('PORT', 8080))
-    # 生产环境使用0.0.0.0，开发环境使用localhost
-    if os.environ.get('FLASK_ENV') == 'production':
-        host = '0.0.0.0'
-    else:
-        host = os.environ.get('HOST', 'localhost')
+    # 统一使用0.0.0.0，便于本地和生产环境测试
+    host = '0.0.0.0'
     debug = os.environ.get('FLASK_ENV') != 'production'
 
     app.run(debug=debug, port=port, host=host)
