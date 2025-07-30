@@ -58,16 +58,28 @@ init_ocr_service()
 # 存储最后导入时间
 last_import_time = None
 
+# 简单测试端点
+@app.route('/ping')
+def ping():
+    """最简单的测试端点"""
+    return "pong"
+
 # 健康检查端点
 @app.route('/health')
 def health_check():
     """健康检查端点，用于监控服务状态"""
+    return "OK", 200
+
+@app.route('/health-json')
+def health_check_json():
+    """详细健康检查端点"""
     try:
         return jsonify({
             'status': 'healthy',
             'timestamp': datetime.now().isoformat(),
             'version': '1.0.0',
             'environment': os.environ.get('FLASK_ENV', 'development'),
+            'port': os.environ.get('PORT', 'not-set'),
             'services': {
                 'flask': 'available',
                 'template_handler': 'available'
