@@ -564,9 +564,9 @@ def get_expiring_customers():
                                 break
 
                         # 处理空值情况
-                        if not user_id or user_id == 'nan' or user_id == 'None':
+                        if not user_id or user_id in ['nan', 'None', 'undefined', 'null']:
                             user_id = '未指定'
-                        if not renewal_sales or renewal_sales == 'nan' or renewal_sales == 'None':
+                        if not renewal_sales or renewal_sales in ['nan', 'None', 'undefined', 'null']:
                             renewal_sales = '未指定'
 
                         # 调试日志

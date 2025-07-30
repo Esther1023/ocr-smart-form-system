@@ -1353,10 +1353,10 @@
 
             let html = '';
             customers.forEach((customer, index) => {
-                // 确保数据安全显示，避免undefined
-                const expiryDate = customer.expiry_date || '日期待确认';
-                const userId = customer.user_id || '信息待完善';
-                const renewalSales = customer.renewal_sales || '待分配';
+                // 确保数据安全显示，避免undefined和其他技术错误信息
+                const expiryDate = (customer.expiry_date && customer.expiry_date !== 'undefined' && customer.expiry_date !== 'null') ? customer.expiry_date : '日期待确认';
+                const userId = (customer.user_id && customer.user_id !== 'undefined' && customer.user_id !== 'null' && customer.user_id !== '未指定') ? customer.user_id : '信息待完善';
+                const renewalSales = (customer.renewal_sales && customer.renewal_sales !== 'undefined' && customer.renewal_sales !== 'null' && customer.renewal_sales !== '未指定') ? customer.renewal_sales : '待分配';
 
                 html += `
                     <div class="customer-item" data-index="${index}">
