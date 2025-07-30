@@ -22,9 +22,10 @@ if not os.path.exists(log_dir):
     os.makedirs(log_dir, exist_ok=True)
 
 # 生产环境使用不同的日志配置
+env = os.environ.get('FLASK_ENV', 'development')
 if env == 'production':
     logging.basicConfig(
-        level=getattr(logging, app.config['LOG_LEVEL']),
+        level=logging.INFO,
         format='%(asctime)s %(levelname)s: %(message)s'
     )
 else:
