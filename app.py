@@ -62,7 +62,7 @@ last_import_time = None
 @app.route('/ping')
 def ping():
     """最简单的测试端点"""
-    return "pong"
+    return "pong - Railway deployment test"
 
 # 健康检查端点
 @app.route('/health')
