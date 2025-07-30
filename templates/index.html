@@ -1124,8 +1124,15 @@
                 document.getElementById('salesChineseEnglish').textContent = customerData.sales_chinese_english || '';
                 document.getElementById('jiandaoyunSales').textContent = customerData.jiandaoyun_sales || '';
 
-                // 自动填充账号-企业名称
-                document.querySelector('[name="company_name"]').value = customerData.account_company_name || '';
+                // 自动填充表单字段
+                // 优先使用公司名称字段，如果为空则使用账号-企业名称
+                const companyNameForForm = customerData.company_name || customerData.account_company_name || '';
+                document.querySelector('[name="company_name"]').value = companyNameForForm;
+
+                // 自动填充税号
+                if (customerData.tax_number) {
+                    document.querySelector('[name="tax_number"]').value = customerData.tax_number;
+                }
 
                 // 显示客户信息框
                 document.getElementById('customerInfo').style.display = 'block';
@@ -1194,6 +1201,16 @@
             // 自动填充简道云账号
             if (customerData.jiandaoyun_sales) {
                 document.querySelector('[name="jdy_account"]').value = customerData.jiandaoyun_sales;
+            }
+
+            // 自动填充表单字段
+            // 优先使用公司名称字段，如果为空则使用账号-企业名称
+            const companyNameForForm = customerData.company_name || customerData.account_company_name || '';
+            document.querySelector('[name="company_name"]').value = companyNameForForm;
+
+            // 自动填充税号
+            if (customerData.tax_number) {
+                document.querySelector('[name="tax_number"]').value = customerData.tax_number;
             }
 
             // 显示客户信息框
@@ -1278,13 +1295,28 @@
             if (board.style.display === 'none' || board.style.display === '') {
                 // 显示看板
                 try {
+                    console.log('正在获取到期客户数据...');
                     const response = await fetch('/get_expiring_customers');
+
+                    console.log('响应状态:', response.status);
+                    console.log('响应URL:', response.url);
+
+                    // 检查是否被重定向到登录页面
+                    if (response.url.includes('/login')) {
+                        alert('请先登录系统');
+                        window.location.href = '/login';
+                        return;
+                    }
+
                     if (response.ok) {
                         const data = await response.json();
+                        console.log('获取到的数据:', data);
                         displayExpiringCustomers(data.expiring_customers);
                         board.style.display = 'block';
                     } else {
-                        alert('获取到期客户数据失败');
+                        const errorText = await response.text();
+                        console.error('API错误响应:', errorText);
+                        alert('获取到期客户数据失败: ' + response.status);
                     }
                 } catch (error) {
                     console.error('获取到期客户数据失败:', error);

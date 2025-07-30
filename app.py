@@ -296,10 +296,12 @@ def get_expiring_customers():
                     expiry_date = pd.to_datetime(row['到期日期'])
                     # 如果过期时间在当前日期和一周后之间
                     if now <= expiry_date <= one_week_later:
-                        # 获取客户分类，过滤掉包含"name"的客户
+                        # 获取客户分类，过滤掉真正的"name客户"（不包括"非Name名单"）
                         customer_classification = str(row.get('客户分类', ''))
-                        if 'name' in customer_classification.lower():
-                            logger.info(f"过滤掉包含'name'的客户: {row.get('账号-企业名称', '')} - {customer_classification}")
+                        # 只过滤包含"name客户"或"name名单"但不包含"非name"的记录
+                        if ('name客户' in customer_classification.lower() or
+                            ('name名单' in customer_classification.lower() and '非name' not in customer_classification.lower())):
+                            logger.info(f"过滤掉name客户: {row.get('账号-企业名称', '')} - {customer_classification}")
                             continue
 
                         # 处理应续ARR
@@ -370,9 +372,9 @@ def query_customer():
                 logger.error(f"Excel文件中缺少'{col}'列")
                 return jsonify({'error': f'数据格式错误：缺少{col}列'}), 500
 
-        # 确定用户ID字段 - 检查可能的字段名
+        # 确定用户ID字段 - 优先使用"用户ID"字段
         user_id_field = None
-        possible_id_fields = ['用户ID', 'ID', '简道云账号', '简道云销售', '账号ID']
+        possible_id_fields = ['用户ID', '简道云销售', 'ID', '简道云账号', '账号ID']
         for field in possible_id_fields:
             if field in df.columns:
                 user_id_field = field
@@ -438,8 +440,14 @@ def query_customer():
                 logger.warning(f"ARR处理错误: {str(e)}")
                 arr_display = '0元'
             
+            # 获取表单填充用的字段
+            company_name_for_form = str(customer_data.get('公司名称', ''))  # 表单用公司名称
+            tax_number = str(customer_data.get('税号', ''))  # 税号
+
             results.append({
-                'account_company_name': account_company_name,  # 账号-企业名称
+                'account_company_name': account_company_name,  # 账号-企业名称（显示用）
+                'company_name': company_name_for_form,        # 公司名称（表单填充用）
+                'tax_number': tax_number,                     # 税号（表单填充用）
                 'integration_mode': integration_mode,          # 集成模式
                 'expiry_date': expiry_date,                   # 到期日期
                 'uid_arr': arr_display,                       # 应续ARR
