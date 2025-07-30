@@ -551,9 +551,13 @@ def ocr_process():
         }), 500
 
 if __name__ == '__main__':
-    # 开发环境配置
+    # 环境配置
     port = int(os.environ.get('PORT', 5001))
-    host = os.environ.get('HOST', 'localhost')
+    # 生产环境使用0.0.0.0，开发环境使用localhost
+    if os.environ.get('FLASK_ENV') == 'production':
+        host = '0.0.0.0'
+    else:
+        host = os.environ.get('HOST', 'localhost')
     debug = os.environ.get('FLASK_ENV') != 'production'
 
     app.run(debug=debug, port=port, host=host)
