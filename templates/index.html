@@ -66,7 +66,7 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="company_name">账号-企业名称（必填）</label>
+                            <label for="company_name">公司名称（必填）</label>
                             <div class="input-group">
                                 <input type="text" class="form-control" name="company_name" id="company_name" required
                                     oninput="debounceQueryByCompanyName(event)" placeholder="输入2个字符以上开始搜索">
@@ -831,7 +831,7 @@
 
         function getFieldLabel(fieldName) {
             const labels = {
-                'company_name': '账号-企业名称',
+                'company_name': '公司名称',
                 'tax_number': '税号',
                 'reg_address': '注册地址',
                 'reg_phone': '注册电话',
@@ -927,10 +927,10 @@
             }
 
             if (appliedCount > 0) {
-                // 触发相关事件（如账号-企业名称查询）
+                // 触发相关事件（如公司名称查询）
                 const companyNameField = document.querySelector('[name="company_name"]');
                 if (companyNameField && companyNameField.value) {
-                    // 触发账号-企业名称查询
+                    // 触发公司名称查询
                     setTimeout(() => {
                         const event = new Event('input', { bubbles: true });
                         companyNameField.dispatchEvent(event);
@@ -1125,7 +1125,7 @@
                 document.getElementById('jiandaoyunSales').textContent = customerData.jiandaoyun_sales || '';
 
                 // 自动填充表单字段
-                // 优先使用公司名称字段，如果为空则使用账号-企业名称
+                // 优先使用Excel中的公司名称字段，如果为空则使用账号-企业名称字段
                 const companyNameForForm = customerData.company_name || customerData.account_company_name || '';
                 document.querySelector('[name="company_name"]').value = companyNameForForm;
 
@@ -1142,7 +1142,7 @@
             }
         }
 
-        // 客户查询功能（通过账号-企业名称）
+        // 客户查询功能（通过公司名称）
         const debounceQueryByCompanyName = debounce((event) => {
             const companyName = event.target.value;
             if (companyName.length < 2) return; // 至少输入2个字符才开始查询
@@ -1151,7 +1151,7 @@
 
         async function queryByCompanyName(companyName) {
             try {
-                console.log('查询账号-企业名称:', companyName); // 调试输出
+                console.log('查询公司名称:', companyName); // 调试输出
                 const response = await fetch('/query_customer', {
                     method: 'POST',
                     headers: {
@@ -1269,7 +1269,7 @@
                 const endYear = document.getElementById('endYear').value;
                 const currentDate = new Date().toISOString().slice(0, 10).replace(/-/g, '');
                 
-                // 新的文件命名格式：开始年份-结束年份+账号-企业名称+帆软简道云续费合同+合同生成日期
+                // 新的文件命名格式：开始年份-结束年份+公司名称+帆软简道云续费合同+合同生成日期
                 a.download = `${startYear}-${endYear}${companyName}-帆软简道云续费合同${currentDate}.docx`;
                 
                 // 触发下载
@@ -1341,16 +1341,16 @@
                 html += `
                     <div class="customer-item">
                         <div class="customer-field">
-                            <div class="customer-field-label">公司名称</div>
-                            <div class="customer-field-value">${customer.company_name || ''}</div>
+                            <div class="customer-field-label">到期时间</div>
+                            <div class="customer-field-value">${customer.expiry_date || '未指定'}</div>
                         </div>
                         <div class="customer-field">
-                            <div class="customer-field-label">客户类型</div>
-                            <div class="customer-field-value">${customer.customer_type || ''}</div>
+                            <div class="customer-field-label">用户ID</div>
+                            <div class="customer-field-value">${customer.user_id || '未指定'}</div>
                         </div>
                         <div class="customer-field">
-                            <div class="customer-field-label">应续ARR</div>
-                            <div class="customer-field-value arr-value">${customer.uid_arr || ''}</div>
+                            <div class="customer-field-label">责任销售</div>
+                            <div class="customer-field-value">${customer.renewal_sales || '未指定'}</div>
                         </div>
                     </div>
                 `;

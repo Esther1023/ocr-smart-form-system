@@ -304,28 +304,38 @@ def get_expiring_customers():
                             logger.info(f"过滤掉name客户: {row.get('账号-企业名称', '')} - {customer_classification}")
                             continue
 
-                        # 处理应续ARR
-                        arr_value = row.get('应续ARR', 0)
-                        try:
-                            if pd.isna(arr_value) or arr_value == '' or float(str(arr_value).replace(',', '')) == 0:
-                                arr_display = '0元'
-                            else:
-                                arr_display = f"{float(str(arr_value).replace(',', ''))}元"
-                        except:
-                            arr_display = '0元'
+                        # 获取用户ID和责任销售信息
+                        user_id = str(row.get('用户ID', ''))
+
+                        # 尝试多个销售字段，优先级：续费责任销售 > 责任销售中英文 > 简道云销售
+                        renewal_sales = ''
+                        for sales_field in ['续费责任销售', '责任销售中英文', '简道云销售']:
+                            if sales_field in row and pd.notna(row[sales_field]):
+                                renewal_sales = str(row[sales_field])
+                                break
+
+                        # 处理空值情况
+                        if not user_id or user_id == 'nan':
+                            user_id = '未指定'
+                        if not renewal_sales or renewal_sales == 'nan':
+                            renewal_sales = '未指定'
 
                         expiring_customers.append({
-                            'company_name': str(row.get('账号-企业名称', '')),  # 显示账号-企业名称，但标签为公司名称
-                            'customer_type': customer_classification,  # 客户分类作为客户类型
-                            'uid_arr': arr_display,  # 应续ARR
-                            'expiry_date': expiry_date.strftime('%Y年%m月%d日')  # 保留用于排序
+                            'expiry_date': expiry_date.strftime('%Y年%m月%d日'),  # 到期时间
+                            'user_id': user_id,  # 用户ID
+                            'renewal_sales': renewal_sales,  # 责任销售
+                            'expiry_date_sort': expiry_date  # 用于排序的日期对象
                         })
                 except Exception as e:
                     logger.warning(f"日期转换错误: {str(e)}")
                     continue
         
         # 按过期日期排序
-        expiring_customers.sort(key=lambda x: x['expiry_date'])
+        expiring_customers.sort(key=lambda x: x['expiry_date_sort'])
+
+        # 移除排序用的字段
+        for customer in expiring_customers:
+            customer.pop('expiry_date_sort', None)
         
         logger.info(f"找到{len(expiring_customers)}个即将过期的客户")
         return jsonify({'expiring_customers': expiring_customers})
