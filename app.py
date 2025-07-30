@@ -260,6 +260,235 @@ def get_future_expiring_customers():
         logger.error(f"获取未来即将过期客户失败: {str(e)}")
         return jsonify({'error': f'获取未来即将过期客户失败: {str(e)}'}), 500
 
+def get_target_date_range():
+    """根据当前日期和工作日规则计算目标查询日期范围"""
+    now = pd.Timestamp.now()
+    weekday = now.weekday()  # 0=周一, 1=周二, ..., 6=周日
+
+    # 检查是否为法定节假日
+    is_holiday_period, holiday_end = is_in_holiday_period(now)
+
+    if is_holiday_period:
+        # 如果在节假日期间，显示假期结束后第一个工作日到期的客户
+        start_date = holiday_end + pd.Timedelta(days=1)
+        end_date = start_date
+        title = "假期后到期的客户"
+        logger.info(f"节假日期间，显示假期后到期客户: {start_date.strftime('%Y-%m-%d')}")
+    elif is_before_holiday(now):
+        # 如果是节假日前的最后一个工作日，显示整个假期期间到期的客户
+        holiday_start, holiday_end = get_next_holiday_period(now)
+        start_date = holiday_start
+        end_date = holiday_end
+        title = "假期期间到期的客户"
+        logger.info(f"节假日前，显示假期期间到期客户: {start_date.strftime('%Y-%m-%d')} 至 {end_date.strftime('%Y-%m-%d')}")
+    elif weekday < 4:  # 周一至周四 (0-3)
+        # 显示明天到期的客户
+        start_date = now + pd.Timedelta(days=1)
+        end_date = start_date
+        title = "明天到期的客户"
+        logger.info(f"平日({['周一','周二','周三','周四'][weekday]})，显示明天到期客户: {start_date.strftime('%Y-%m-%d')}")
+    elif weekday == 4:  # 周五
+        # 显示整个周末期间（周六和周日）到期的客户
+        start_date = now + pd.Timedelta(days=1)  # 周六
+        end_date = now + pd.Timedelta(days=2)    # 周日
+        title = "周末到期的客户"
+        logger.info(f"周五，显示周末到期客户: {start_date.strftime('%Y-%m-%d')} 至 {end_date.strftime('%Y-%m-%d')}")
+    elif weekday == 5:  # 周六
+        # 显示周日到期的客户
+        start_date = now + pd.Timedelta(days=1)  # 周日
+        end_date = start_date
+        title = "明天到期的客户"
+        logger.info(f"周六，显示周日到期客户: {start_date.strftime('%Y-%m-%d')}")
+    else:  # 周日 (weekday == 6)
+        # 显示周一到期的客户
+        start_date = now + pd.Timedelta(days=1)  # 周一
+        end_date = start_date
+        title = "明天到期的客户"
+        logger.info(f"周日，显示周一到期客户: {start_date.strftime('%Y-%m-%d')}")
+
+    return start_date, end_date, title
+
+def is_in_holiday_period(date):
+    """检查给定日期是否在法定节假日期间"""
+    holidays = get_china_holidays(date.year)
+    for holiday_start, holiday_end in holidays:
+        if holiday_start <= date.date() <= holiday_end:
+            return True, pd.Timestamp(holiday_end)
+    return False, None
+
+def is_before_holiday(date):
+    """检查给定日期是否为节假日前的最后一个工作日"""
+    holidays = get_china_holidays(date.year)
+    for holiday_start, holiday_end in holidays:
+        # 检查明天是否是节假日的开始
+        tomorrow = (date + pd.Timedelta(days=1)).date()
+        if tomorrow == holiday_start:
+            return True
+    return False
+
+def get_next_holiday_period(date):
+    """获取下一个节假日的开始和结束日期"""
+    holidays = get_china_holidays(date.year)
+    for holiday_start, holiday_end in holidays:
+        if holiday_start > date.date():
+            return pd.Timestamp(holiday_start), pd.Timestamp(holiday_end)
+
+    # 如果当年没有更多节假日，检查下一年
+    next_year_holidays = get_china_holidays(date.year + 1)
+    if next_year_holidays:
+        holiday_start, holiday_end = next_year_holidays[0]
+        return pd.Timestamp(holiday_start), pd.Timestamp(holiday_end)
+
+    return None, None
+
+def get_china_holidays(year):
+    """获取中国法定节假日列表（简化版本）"""
+    import datetime
+
+    holidays = []
+
+    # 元旦 (1月1日)
+    holidays.append((datetime.date(year, 1, 1), datetime.date(year, 1, 1)))
+
+    # 春节 (农历正月初一，这里使用近似日期)
+    if year == 2025:
+        holidays.append((datetime.date(2025, 1, 28), datetime.date(2025, 2, 3)))  # 春节假期
+    elif year == 2026:
+        holidays.append((datetime.date(2026, 2, 16), datetime.date(2026, 2, 22)))  # 春节假期
+
+    # 清明节 (4月4日或5日)
+    holidays.append((datetime.date(year, 4, 4), datetime.date(year, 4, 6)))
+
+    # 劳动节 (5月1日)
+    holidays.append((datetime.date(year, 5, 1), datetime.date(year, 5, 3)))
+
+    # 端午节 (农历五月初五，这里使用近似日期)
+    if year == 2025:
+        holidays.append((datetime.date(2025, 5, 31), datetime.date(2025, 6, 2)))
+    elif year == 2026:
+        holidays.append((datetime.date(2026, 6, 19), datetime.date(2026, 6, 21)))
+
+    # 中秋节 (农历八月十五，这里使用近似日期)
+    if year == 2025:
+        holidays.append((datetime.date(2025, 10, 6), datetime.date(2025, 10, 8)))
+    elif year == 2026:
+        holidays.append((datetime.date(2026, 9, 25), datetime.date(2026, 9, 27)))
+
+    # 国庆节 (10月1日)
+    holidays.append((datetime.date(year, 10, 1), datetime.date(year, 10, 7)))
+
+    return holidays
+
+def get_target_date_range():
+    """根据当前日期和工作日规则计算目标查询日期范围"""
+    now = pd.Timestamp.now()
+    weekday = now.weekday()  # 0=周一, 1=周二, ..., 6=周日
+
+    # 检查是否为法定节假日
+    is_holiday_period, holiday_end = is_in_holiday_period(now)
+
+    if is_holiday_period:
+        # 如果在节假日期间，显示假期结束后第一个工作日到期的客户
+        start_date = holiday_end + pd.Timedelta(days=1)
+        end_date = start_date
+        title = "假期后到期的客户"
+        logger.info(f"节假日期间，显示假期后到期客户: {start_date.strftime('%Y-%m-%d')}")
+    elif is_before_holiday(now):
+        # 如果是节假日前的最后一个工作日，显示整个假期期间到期的客户
+        holiday_start, holiday_end = get_next_holiday_period(now)
+        start_date = holiday_start
+        end_date = holiday_end
+        title = "假期期间到期的客户"
+        logger.info(f"节假日前，显示假期期间到期客户: {start_date.strftime('%Y-%m-%d')} 至 {end_date.strftime('%Y-%m-%d')}")
+    elif weekday < 4:  # 周一至周四 (0-3)
+        # 显示明天到期的客户
+        start_date = now + pd.Timedelta(days=1)
+        end_date = start_date
+        title = "明天到期的客户"
+        logger.info(f"平日({['周一','周二','周三','周四'][weekday]})，显示明天到期客户: {start_date.strftime('%Y-%m-%d')}")
+    elif weekday == 4:  # 周五
+        # 显示整个周末期间（周六和周日）到期的客户
+        start_date = now + pd.Timedelta(days=1)  # 周六
+        end_date = now + pd.Timedelta(days=2)    # 周日
+        title = "周末到期的客户"
+        logger.info(f"周五，显示周末到期客户: {start_date.strftime('%Y-%m-%d')} 至 {end_date.strftime('%Y-%m-%d')}")
+    else:  # 周末 (weekday == 5 or 6)
+        # 周末不用提醒，返回空范围
+        return None, None, "周末休息，无需提醒"
+
+    return start_date, end_date, title
+
+def is_in_holiday_period(date):
+    """检查给定日期是否在法定节假日期间"""
+    holidays = get_china_holidays(date.year)
+    for holiday_start, holiday_end in holidays:
+        if holiday_start <= date.date() <= holiday_end:
+            return True, pd.Timestamp(holiday_end)
+    return False, None
+
+def is_before_holiday(date):
+    """检查给定日期是否为节假日前的最后一个工作日"""
+    holidays = get_china_holidays(date.year)
+    for holiday_start, holiday_end in holidays:
+        # 检查明天是否是节假日的开始
+        tomorrow = (date + pd.Timedelta(days=1)).date()
+        if tomorrow == holiday_start:
+            return True
+    return False
+
+def get_next_holiday_period(date):
+    """获取下一个节假日的开始和结束日期"""
+    holidays = get_china_holidays(date.year)
+    for holiday_start, holiday_end in holidays:
+        if holiday_start > date.date():
+            return pd.Timestamp(holiday_start), pd.Timestamp(holiday_end)
+
+    # 如果当年没有更多节假日，检查下一年
+    next_year_holidays = get_china_holidays(date.year + 1)
+    if next_year_holidays:
+        holiday_start, holiday_end = next_year_holidays[0]
+        return pd.Timestamp(holiday_start), pd.Timestamp(holiday_end)
+
+    return None, None
+
+def get_china_holidays(year):
+    """获取中国法定节假日列表（简化版本）"""
+    import datetime
+
+    holidays = []
+
+    # 元旦 (1月1日)
+    holidays.append((datetime.date(year, 1, 1), datetime.date(year, 1, 1)))
+
+    # 春节 (农历正月初一，这里使用近似日期)
+    if year == 2025:
+        holidays.append((datetime.date(2025, 1, 28), datetime.date(2025, 2, 3)))  # 春节假期
+    elif year == 2026:
+        holidays.append((datetime.date(2026, 2, 16), datetime.date(2026, 2, 22)))  # 春节假期
+
+    # 清明节 (4月4日或5日)
+    holidays.append((datetime.date(year, 4, 4), datetime.date(year, 4, 6)))
+
+    # 劳动节 (5月1日)
+    holidays.append((datetime.date(year, 5, 1), datetime.date(year, 5, 3)))
+
+    # 端午节 (农历五月初五，这里使用近似日期)
+    if year == 2025:
+        holidays.append((datetime.date(2025, 5, 31), datetime.date(2025, 6, 2)))
+    elif year == 2026:
+        holidays.append((datetime.date(2026, 6, 19), datetime.date(2026, 6, 21)))
+
+    # 中秋节 (农历八月十五，这里使用近似日期)
+    if year == 2025:
+        holidays.append((datetime.date(2025, 10, 6), datetime.date(2025, 10, 8)))
+    elif year == 2026:
+        holidays.append((datetime.date(2026, 9, 25), datetime.date(2026, 9, 27)))
+
+    # 国庆节 (10月1日)
+    holidays.append((datetime.date(year, 10, 1), datetime.date(year, 10, 7)))
+
+    return holidays
+
 @app.route('/get_expiring_customers')
 @login_required
 def get_expiring_customers():
@@ -282,20 +511,37 @@ def get_expiring_customers():
             logger.error("Excel文件中缺少必要列")
             return jsonify({'error': '数据格式错误：缺少必要列'}), 500
         
-        # 获取当前日期
-        now = datetime.now()
-        
-        # 计算一周后的日期
-        one_week_later = now + pd.Timedelta(days=7)
-        
-        # 筛选出一周内将要过期的客户
+        # 获取当前时间和目标日期范围
+        now = pd.Timestamp.now()
+        logger.info(f"当前时间: {now}")
+
+        # 使用智能日期计算
+        start_date, end_date, title = get_target_date_range()
+
+        # 如果是周末，返回空结果
+        if start_date is None:
+            logger.info("周末期间，不显示提醒")
+            return jsonify({
+                'expiring_customers': [],
+                'title': title,
+                'message': '周末休息，无客户到期提醒'
+            })
+
+        logger.info(f"查询日期范围: {start_date.strftime('%Y-%m-%d')} 至 {end_date.strftime('%Y-%m-%d')}")
+        logger.info(f"看板标题: {title}")
+
+        # 筛选出目标日期范围内将要过期的客户
         expiring_customers = []
         for _, row in df.iterrows():
             if pd.notna(row['到期日期']):
                 try:
                     expiry_date = pd.to_datetime(row['到期日期'])
-                    # 如果过期时间在当前日期和一周后之间
-                    if now <= expiry_date <= one_week_later:
+                    # 检查过期时间是否在目标日期范围内
+                    expiry_date_only = expiry_date.date()
+                    start_date_only = start_date.date()
+                    end_date_only = end_date.date()
+
+                    if start_date_only <= expiry_date_only <= end_date_only:
                         # 获取客户分类，过滤掉真正的"name客户"（不包括"非Name名单"）
                         customer_classification = str(row.get('客户分类', ''))
                         # 只过滤包含"name客户"或"name名单"但不包含"非name"的记录
@@ -338,7 +584,12 @@ def get_expiring_customers():
             customer.pop('expiry_date_sort', None)
         
         logger.info(f"找到{len(expiring_customers)}个即将过期的客户")
-        return jsonify({'expiring_customers': expiring_customers})
+        return jsonify({
+            'expiring_customers': expiring_customers,
+            'title': title,
+            'count': len(expiring_customers),
+            'date_range': f"{start_date.strftime('%Y-%m-%d')} 至 {end_date.strftime('%Y-%m-%d')}"
+        })
 
     except Exception as e:
         logger.error(f"获取即将过期客户失败: {str(e)}")

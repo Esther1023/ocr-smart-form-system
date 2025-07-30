@@ -1311,7 +1311,7 @@
                     if (response.ok) {
                         const data = await response.json();
                         console.log('获取到的数据:', data);
-                        displayExpiringCustomers(data.expiring_customers);
+                        displayExpiringCustomers(data.expiring_customers, data.title, data.count, data.message);
                         board.style.display = 'block';
                     } else {
                         const errorText = await response.text();
@@ -1328,8 +1328,24 @@
             }
         }
 
-        function displayExpiringCustomers(customers) {
+        function displayExpiringCustomers(customers, title, count, message) {
             const listContainer = document.getElementById('expiringCustomersList');
+            const boardTitle = document.querySelector('.customer-board-box h4');
+
+            // 更新看板标题
+            if (title) {
+                if (count !== undefined) {
+                    boardTitle.textContent = `${title} (${count}个)`;
+                } else {
+                    boardTitle.textContent = title;
+                }
+            }
+
+            // 如果有特殊消息（如周末提示），显示消息
+            if (message) {
+                listContainer.innerHTML = `<div class="weekend-message">${message}</div>`;
+                return;
+            }
 
             if (!customers || customers.length === 0) {
                 listContainer.innerHTML = '<div class="no-customers">暂无即将到期的客户</div>';

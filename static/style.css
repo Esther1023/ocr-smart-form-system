@@ -113,6 +113,25 @@
     font-style: italic;
 }
 
+.weekend-message {
+    text-align: center;
+    padding: 30px 20px;
+    color: var(--info-color);
+    font-size: 16px;
+    font-weight: 500;
+    background-color: var(--background-color);
+    border-radius: 8px;
+    border: 2px dashed var(--info-color);
+    margin: 10px 0;
+}
+
+.weekend-message::before {
+    content: '🌴';
+    display: block;
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
 .expiring-customers-header {
     display: none;
 }
