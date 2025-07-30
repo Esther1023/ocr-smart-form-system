@@ -296,11 +296,27 @@ def get_expiring_customers():
                     expiry_date = pd.to_datetime(row['到期日期'])
                     # 如果过期时间在当前日期和一周后之间
                     if now <= expiry_date <= one_week_later:
+                        # 获取客户分类，过滤掉包含"name"的客户
+                        customer_classification = str(row.get('客户分类', ''))
+                        if 'name' in customer_classification.lower():
+                            logger.info(f"过滤掉包含'name'的客户: {row.get('账号-企业名称', '')} - {customer_classification}")
+                            continue
+
+                        # 处理应续ARR
+                        arr_value = row.get('应续ARR', 0)
+                        try:
+                            if pd.isna(arr_value) or arr_value == '' or float(str(arr_value).replace(',', '')) == 0:
+                                arr_display = '0元'
+                            else:
+                                arr_display = f"{float(str(arr_value).replace(',', ''))}元"
+                        except:
+                            arr_display = '0元'
+
                         expiring_customers.append({
-                            'expiry_date': expiry_date.strftime('%Y年%m月%d日'),
-                            'jdy_account': str(row.get('简道云销售', '')),
-                            'company_name': str(row.get('账号-企业名称', '')),
-                            'sales_person': str(row.get('续费责任销售', ''))
+                            'company_name': str(row.get('账号-企业名称', '')),  # 显示账号-企业名称，但标签为公司名称
+                            'customer_type': customer_classification,  # 客户分类作为客户类型
+                            'uid_arr': arr_display,  # 应续ARR
+                            'expiry_date': expiry_date.strftime('%Y年%m月%d日')  # 保留用于排序
                         })
                 except Exception as e:
                     logger.warning(f"日期转换错误: {str(e)}")
@@ -348,15 +364,34 @@ def query_customer():
             return jsonify({'error': '数据文件读取失败'}), 500
 
         # 检查必要的列是否存在
-        required_columns = ['简道云销售', '账号-企业名称']
+        required_columns = ['账号-企业名称']
         for col in required_columns:
             if col not in df.columns:
                 logger.error(f"Excel文件中缺少'{col}'列")
                 return jsonify({'error': f'数据格式错误：缺少{col}列'}), 500
-        
+
+        # 确定用户ID字段 - 检查可能的字段名
+        user_id_field = None
+        possible_id_fields = ['用户ID', 'ID', '简道云账号', '简道云销售', '账号ID']
+        for field in possible_id_fields:
+            if field in df.columns:
+                user_id_field = field
+                logger.info(f"使用字段 '{field}' 作为用户ID字段")
+                break
+
         # 根据查询条件进行模糊匹配
         if jdy_id:
-            matching_rows = df[df['简道云销售'].astype(str).str.contains(str(jdy_id), case=False, na=False)]
+            if user_id_field:
+                matching_rows = df[df[user_id_field].astype(str).str.contains(str(jdy_id), case=False, na=False)]
+            else:
+                # 如果没有找到用户ID字段，尝试在多个字段中搜索
+                logger.warning("未找到明确的用户ID字段，在多个字段中搜索")
+                mask = False
+                search_fields = ['简道云销售', '账号-企业名称']
+                for field in search_fields:
+                    if field in df.columns:
+                        mask = mask | df[field].astype(str).str.contains(str(jdy_id), case=False, na=False)
+                matching_rows = df[mask]
         else:
             matching_rows = df[df['账号-企业名称'].astype(str).str.contains(str(company_name), case=False, na=False)]
             

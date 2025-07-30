@@ -32,6 +32,87 @@
     font-size: 14px;
 }
 
+/* 客户看板样式 */
+.customer-board-box {
+    background-color: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 15px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.customer-board-box h4 {
+    margin: 0 0 15px 0;
+    color: var(--text-color);
+    font-size: 16px;
+    font-weight: 600;
+    border-bottom: 2px solid var(--primary-color);
+    padding-bottom: 8px;
+}
+
+.customers-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.customer-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    margin-bottom: 8px;
+    background-color: #fff;
+    border: 1px solid var(--medium-gray);
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.customer-item:hover {
+    background-color: var(--background-color);
+    border-color: var(--primary-color);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.customer-item:last-child {
+    margin-bottom: 0;
+}
+
+.customer-field {
+    flex: 1;
+    margin-right: 15px;
+    font-size: 14px;
+}
+
+.customer-field:last-child {
+    margin-right: 0;
+}
+
+.customer-field-label {
+    font-weight: 600;
+    color: var(--dark-gray);
+    font-size: 12px;
+    margin-bottom: 2px;
+}
+
+.customer-field-value {
+    color: var(--text-color);
+    font-weight: 500;
+}
+
+.customer-field-value.arr-value {
+    color: var(--success-color);
+    font-weight: 600;
+}
+
+.no-customers {
+    text-align: center;
+    padding: 20px;
+    color: var(--dark-gray);
+    font-style: italic;
+}
+
 .expiring-customers-header {
     display: none;
 }

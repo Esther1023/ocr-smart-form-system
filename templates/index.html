@@ -157,6 +157,16 @@
                                 </div>
                             </div>
                         </div>
+
+                        <!-- 最近到期客户看板 -->
+                        <div id="expiringCustomersBoard" class="form-group full-width" style="display: none;">
+                            <div class="customer-board-box">
+                                <h4>最近到期客户</h4>
+                                <div id="expiringCustomersList" class="customers-list">
+                                    <!-- 动态生成的客户列表 -->
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -1256,6 +1266,66 @@
                 alert('生成合同失败: ' + error.message);
             });
         });
+
+        // KA看板功能
+        document.getElementById('btn-daike-inline').addEventListener('click', function() {
+            toggleExpiringCustomersBoard();
+        });
+
+        async function toggleExpiringCustomersBoard() {
+            const board = document.getElementById('expiringCustomersBoard');
+
+            if (board.style.display === 'none' || board.style.display === '') {
+                // 显示看板
+                try {
+                    const response = await fetch('/get_expiring_customers');
+                    if (response.ok) {
+                        const data = await response.json();
+                        displayExpiringCustomers(data.expiring_customers);
+                        board.style.display = 'block';
+                    } else {
+                        alert('获取到期客户数据失败');
+                    }
+                } catch (error) {
+                    console.error('获取到期客户数据失败:', error);
+                    alert('获取到期客户数据失败: ' + error.message);
+                }
+            } else {
+                // 隐藏看板
+                board.style.display = 'none';
+            }
+        }
+
+        function displayExpiringCustomers(customers) {
+            const listContainer = document.getElementById('expiringCustomersList');
+
+            if (!customers || customers.length === 0) {
+                listContainer.innerHTML = '<div class="no-customers">暂无即将到期的客户</div>';
+                return;
+            }
+
+            let html = '';
+            customers.forEach(customer => {
+                html += `
+                    <div class="customer-item">
+                        <div class="customer-field">
+                            <div class="customer-field-label">公司名称</div>
+                            <div class="customer-field-value">${customer.company_name || ''}</div>
+                        </div>
+                        <div class="customer-field">
+                            <div class="customer-field-label">客户类型</div>
+                            <div class="customer-field-value">${customer.customer_type || ''}</div>
+                        </div>
+                        <div class="customer-field">
+                            <div class="customer-field-label">应续ARR</div>
+                            <div class="customer-field-value arr-value">${customer.uid_arr || ''}</div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            listContainer.innerHTML = html;
+        }
 
         // 初始化
         initEventListeners();
