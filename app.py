@@ -577,8 +577,19 @@ def ocr_process():
 if __name__ == '__main__':
     # 环境配置
     port = int(os.environ.get('PORT', 8080))
-    # 统一使用0.0.0.0，便于本地和生产环境测试
-    host = '0.0.0.0'
+
+    # 根据环境设置主机
+    if os.environ.get('FLASK_ENV') == 'production':
+        host = '0.0.0.0'  # 生产环境绑定所有接口
+    else:
+        host = 'localhost'  # 开发环境使用localhost
+
     debug = os.environ.get('FLASK_ENV') != 'production'
+
+    print(f"🚀 启动Flask应用...")
+    print(f"📍 端口: {port}")
+    print(f"🌐 主机: {host}")
+    print(f"🔧 环境: {os.environ.get('FLASK_ENV', 'development')}")
+    print(f"🐛 调试模式: {debug}")
 
     app.run(debug=debug, port=port, host=host)
