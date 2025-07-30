@@ -551,20 +551,30 @@ def get_expiring_customers():
                             continue
 
                         # 获取用户ID和责任销售信息
-                        user_id = str(row.get('用户ID', ''))
+                        user_id_raw = row.get('用户ID', '')
+                        user_id = str(user_id_raw) if pd.notna(user_id_raw) else ''
 
                         # 尝试多个销售字段，优先级：续费责任销售 > 责任销售中英文 > 简道云销售
                         renewal_sales = ''
+                        sales_field_used = None
                         for sales_field in ['续费责任销售', '责任销售中英文', '简道云销售']:
                             if sales_field in row and pd.notna(row[sales_field]):
                                 renewal_sales = str(row[sales_field])
+                                sales_field_used = sales_field
                                 break
 
                         # 处理空值情况
-                        if not user_id or user_id == 'nan':
+                        if not user_id or user_id == 'nan' or user_id == 'None':
                             user_id = '未指定'
-                        if not renewal_sales or renewal_sales == 'nan':
+                        if not renewal_sales or renewal_sales == 'nan' or renewal_sales == 'None':
                             renewal_sales = '未指定'
+
+                        # 调试日志
+                        company_name = row.get('账号-企业名称', '')
+                        logger.info(f"处理客户: {company_name}")
+                        logger.info(f"  原始用户ID: {repr(user_id_raw)} -> 处理后: {user_id}")
+                        logger.info(f"  使用销售字段: {sales_field_used} -> 值: {renewal_sales}")
+                        logger.info(f"  到期日期: {expiry_date.strftime('%Y年%m月%d日')}")
 
                         expiring_customers.append({
                             'expiry_date': expiry_date.strftime('%Y年%m月%d日'),  # 到期时间
