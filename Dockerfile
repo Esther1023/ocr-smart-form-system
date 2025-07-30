@@ -1,25 +1,41 @@
-FROM gitea/runner-images:ubuntu-20.04-slim
-
-# 更新包列表并安装 Python 3 和 pip
-RUN apt-get update && \
-    apt-get install -y python3 python3-pip && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
-
-# 修改 pip 源
-RUN pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
-
-# 使用 pip 安装 Ansible
-RUN pip3 install ansible
-
-# 将 Ansible 添加到环境变量
-ENV PATH="/usr/local/bin:$PATH"
+# 使用官方Python运行时作为基础镜像
+FROM python:3.11-slim
 
 # 设置工作目录
+WORKDIR /app
 
-# 复制 Ansible 配置文件和剧本（如果有）
-# COPY ansible.cfg /etc/ansible/ansible.cfg
-# COPY playbooks/ /workspace/playbooks/
+# 安装系统依赖
+RUN apt-get update && apt-get install -y \
+    tesseract-ocr \
+    tesseract-ocr-chi-sim \
+    tesseract-ocr-chi-tra \
+    tesseract-ocr-eng \
+    libgl1-mesa-glx \
+    libglib2.0-0 \
+    libsm6 \
+    libxext6 \
+    libxrender-dev \
+    libgomp1 \
+    && rm -rf /var/lib/apt/lists/*
 
-# 默认命令
-CMD ["ansible", "--version"]
+# 复制requirements文件
+COPY requirements.txt .
+
+# 安装Python依赖
+RUN pip install --no-cache-dir -r requirements.txt
+
+# 复制应用代码
+COPY . .
+
+# 创建必要的目录
+RUN mkdir -p logs uploads out_data
+
+# 设置环境变量
+ENV FLASK_ENV=production
+ENV PYTHONPATH=/app
+
+# 暴露端口
+EXPOSE $PORT
+
+# 启动命令
+CMD gunicorn --bind 0.0.0.0:$PORT app:app --workers 1 --timeout 120

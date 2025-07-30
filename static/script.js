@@ -141,168 +141,93 @@ function showExpiringCustomersAlert(customers) {
     document.body.appendChild(alertContainer);
 }
 
-// 获取未来23-30天内到期的客户信息
-function fetchFutureExpiringCustomers() {
-    fetch('/get_future_expiring_customers')
-        .then(response => response.json())
-        .then(data => {
-            if (data.error) {
-                console.error('获取未来即将过期客户失败:', data.error);
-                return;
-            }
-            
-            if ((data.esther_customers && data.esther_customers.length > 0) || 
-                (data.other_customers && data.other_customers.length > 0)) {
-                showFutureExpiringCustomersDashboard(data.esther_customers, data.other_customers);
-            }
-        })
-        .catch(error => {
-            console.error('获取未来即将过期客户错误:', error);
-        });
-}
-
-// 创建并显示未来23-30天内到期客户看板
+// 创建备忘录白板（替代原来的25-30天到期客户看板）
 function showFutureExpiringCustomersDashboard(estherCustomers, otherCustomers) {
     // 检查是否已存在看板，如果存在则移除
     const existingDashboard = document.querySelector('.future-expiring-dashboard');
     if (existingDashboard) {
         existingDashboard.remove();
     }
-    
-    // 创建看板容器
+
+    // 创建看板容器（保持原来的类名以维持样式）
     const dashboardContainer = document.createElement('div');
     dashboardContainer.className = 'future-expiring-dashboard';
-    
-    // 创建看板标题 - 只保留关闭按钮，不显示标题
+
+    // 创建看板标题
     const dashboardHeader = document.createElement('div');
     dashboardHeader.className = 'dashboard-header';
-    
+
+    const memoTitle = document.createElement('h4');
+    memoTitle.textContent = '备忘录';
+    memoTitle.style.color = 'var(--text-color)';
+    memoTitle.style.margin = '0';
+    memoTitle.style.fontSize = '16px';
+
     const closeButton = document.createElement('button');
     closeButton.className = 'close-btn';
     closeButton.textContent = '×';
     closeButton.onclick = function() {
         dashboardContainer.remove();
     };
-    
+
+    dashboardHeader.appendChild(memoTitle);
     dashboardHeader.appendChild(closeButton);
-    
-    // 创建看板内容
+
+    // 创建备忘录内容区域（使用原来的dashboard-body类名）
     const dashboardBody = document.createElement('div');
     dashboardBody.className = 'dashboard-body';
-    
-    // Esther负责的客户部分
-    if (estherCustomers && estherCustomers.length > 0) {
-        const estherSection = document.createElement('div');
-        estherSection.className = 'customer-section';
-        
-        // 不显示标题
-        // const estherTitle = document.createElement('h4');
-        // estherTitle.textContent = 'Esther朱晓琳负责的客户';
-        // estherSection.appendChild(estherTitle);
-        
-        const estherTable = createCustomerTable(estherCustomers);
-        estherSection.appendChild(estherTable);
-        
-        dashboardBody.appendChild(estherSection);
+
+    const memoTextarea = document.createElement('textarea');
+    memoTextarea.className = 'memo-textarea';
+    memoTextarea.placeholder = '在这里记录您的备忘事项...\n\n• 待办事项\n• 重要提醒\n• 工作笔记\n• 客户跟进';
+    memoTextarea.style.width = '100%';
+    memoTextarea.style.height = '100%';
+    memoTextarea.style.border = 'none';
+    memoTextarea.style.outline = 'none';
+    memoTextarea.style.resize = 'none';
+    memoTextarea.style.padding = '15px';
+    memoTextarea.style.fontSize = '14px';
+    memoTextarea.style.lineHeight = '1.5';
+    memoTextarea.style.backgroundColor = 'transparent';
+    memoTextarea.style.color = 'var(--text-color)';
+    memoTextarea.style.fontFamily = 'inherit';
+
+    // 从本地存储加载备忘录内容
+    const savedMemo = localStorage.getItem('memo-content');
+    if (savedMemo) {
+        memoTextarea.value = savedMemo;
     }
-    
-    // 其他销售负责的客户部分
-    if (otherCustomers && otherCustomers.length > 0) {
-        const otherSection = document.createElement('div');
-        otherSection.className = 'customer-section';
-        
-        // 不显示标题
-        // const otherTitle = document.createElement('h4');
-        // otherTitle.textContent = '其他销售负责的客户';
-        // otherSection.appendChild(otherTitle);
-        
-        const otherTable = createCustomerTable(otherCustomers);
-        otherSection.appendChild(otherTable);
-        
-        dashboardBody.appendChild(otherSection);
-    }
-    
+
+    // 自动保存备忘录内容
+    memoTextarea.addEventListener('input', function() {
+        localStorage.setItem('memo-content', this.value);
+    });
+
+    dashboardBody.appendChild(memoTextarea);
+
     // 组装看板
     dashboardContainer.appendChild(dashboardHeader);
     dashboardContainer.appendChild(dashboardBody);
-    
+
     // 添加到页面
     document.body.appendChild(dashboardContainer);
 }
 
-// 创建客户表格
-function createCustomerTable(customers) {
-    // 创建一个容器而不是表格，采用卡片式分行展示
-    const container = document.createElement('div');
-    container.className = 'customer-card-list';
-    customers.forEach(customer => {
-        const card = document.createElement('div');
-        card.className = 'customer-card-item';
-        // 到期日期（高亮加粗）
-        const dateDiv = document.createElement('div');
-        dateDiv.className = 'customer-card-date';
-        dateDiv.textContent = customer.expiry_date;
-        card.appendChild(dateDiv);
-        // 简道云账号
-        const accountDiv = document.createElement('div');
-        accountDiv.className = 'customer-card-account';
-        accountDiv.textContent = customer.jdy_account;
-        card.appendChild(accountDiv);
-        // 公司名称
-        const companyDiv = document.createElement('div');
-        companyDiv.className = 'customer-card-company';
-        companyDiv.textContent = customer.company_name;
-        card.appendChild(companyDiv);
-        // 销售人员
-        const salesDiv = document.createElement('div');
-        salesDiv.className = 'customer-card-sales';
-        salesDiv.textContent = customer.sales_person || '未指定';
-        if (customer.sales_person === 'Esther-朱晓琳') {
-            salesDiv.classList.add('esther-sales');
-        } else if (customer.sales_person === 'public-公共账号') {
-            salesDiv.classList.add('public-sales');
-        }
-        card.appendChild(salesDiv);
-        container.appendChild(card);
-    });
-    return container;
-}
 
-// 页面加载完成后获取即将过期的客户
+
+
+
+// 页面加载完成后获取即将过期的客户并显示备忘录
 document.addEventListener('DOMContentLoaded', function() {
     // 检查用户是否已登录（通过检查页面上的元素判断）
     if (document.getElementById('contractForm')) {
         fetchExpiringCustomers();
-        fetchFutureExpiringCustomers();
+        // 显示备忘录白板（替代原来的25-30天到期客户看板）
+        showFutureExpiringCustomersDashboard([], []);
     }
 });
 
-function generateInvoiceInfo() {
-    const invoiceType = document.getElementById('invoiceType').value;
-    const email = document.getElementById('invoiceEmail').value;
-    const totalAmount = document.getElementById('totalAmount').value;
-    const totalAmountCn = document.getElementById('totalAmountCn').value;
-    
-    let info = `简道云ID: ${jdyId}\n`;
-    info += `发票类型: ${invoiceType}\n`;
-    info += `服务费用金额: ${totalAmount}元（${totalAmountCn}）\n`;
-    info += `公司名称: ${companyName}\n`;
-    info += `税号: ${taxNumber}\n`;
-    info += `地址: ${address}\n`;
-    info += `电话: ${phone}\n`;
-    info += `开户行: ${bankName}\n`;
-    info += `账号: ${bankAccount}\n`;
-    info += `邮箱: ${email}\n`;
-    
-    document.getElementById('invoiceInfo').value = info;
 
-    // 添加历史记录
-    const now = new Date();
-    const timestamp = now.toLocaleString('zh-CN');
-    let historyInfo = document.getElementById('invoiceHistory').value;
-    historyInfo = `${timestamp}\n${info}\n\n${historyInfo}`;
-    document.getElementById('invoiceHistory').value = historyInfo;
-}
 
 
 function queryCustomer() {

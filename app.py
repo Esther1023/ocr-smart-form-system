@@ -1,28 +1,85 @@
 from flask import Flask, render_template, request, send_file, jsonify, redirect, url_for, session
 from template_handler import TemplateHandler
+from ocr_service import OCRService
+from config import config
 import os
 import tempfile
 import pandas as pd
 from datetime import datetime
 import logging
 
+# 获取环境配置
+env = os.environ.get('FLASK_ENV', 'development')
+app_config = config.get(env, config['default'])
+
+# 创建Flask应用
+app = Flask(__name__)
+app.config.from_object(app_config)
+
 # 设置日志记录
 log_dir = 'logs'
-log_file = os.path.join(log_dir, 'app.log')
-os.makedirs(log_dir, exist_ok=True)
-logging.basicConfig(filename=log_file, level=logging.INFO, format='%(asctime)s %(levelname)s: %(message)s')
+if not os.path.exists(log_dir):
+    os.makedirs(log_dir, exist_ok=True)
+
+# 生产环境使用不同的日志配置
+if env == 'production':
+    logging.basicConfig(
+        level=getattr(logging, app.config['LOG_LEVEL']),
+        format='%(asctime)s %(levelname)s: %(message)s'
+    )
+else:
+    log_file = os.path.join(log_dir, 'app.log')
+    logging.basicConfig(
+        filename=log_file,
+        level=logging.INFO,
+        format='%(asctime)s %(levelname)s: %(message)s'
+    )
+
 logger = logging.getLogger(__name__)
 
-app = Flask(__name__)
-app.secret_key = 'your_secret_key'  # 用于会话加密
+# 初始化OCR服务
+ocr_service = OCRService()
 
 # 存储最后导入时间
 last_import_time = None
 
+# 健康检查端点
+@app.route('/health')
+def health_check():
+    """健康检查端点，用于监控服务状态"""
+    try:
+        # 检查OCR服务是否可用
+        ocr_status = "available" if ocr_service else "unavailable"
+
+        return jsonify({
+            'status': 'healthy',
+            'timestamp': datetime.now().isoformat(),
+            'version': '1.0.0',
+            'services': {
+                'ocr': ocr_status,
+                'template_handler': 'available'
+            }
+        }), 200
+    except Exception as e:
+        logger.error(f"健康检查失败: {str(e)}")
+        return jsonify({
+            'status': 'unhealthy',
+            'error': str(e),
+            'timestamp': datetime.now().isoformat()
+        }), 500
+
 # 添加安全头
 @app.after_request
 def add_security_headers(response):
-    response.headers['Content-Security-Policy'] = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'"
+    if app.config.get('DEBUG'):
+        # 开发环境使用宽松的CSP
+        response.headers['Content-Security-Policy'] = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'"
+    else:
+        # 生产环境使用更严格的安全头
+        response.headers['Content-Security-Policy'] = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'"
+        response.headers['X-Content-Type-Options'] = 'nosniff'
+        response.headers['X-Frame-Options'] = 'DENY'
+        response.headers['X-XSS-Protection'] = '1; mode=block'
     return response
 
 # 登录页面
@@ -443,5 +500,60 @@ def generate():
         except Exception as e:
             logger.error(f"清理临时文件时发生错误: {str(e)}")
 
+@app.route('/ocr_process', methods=['POST'])
+def ocr_process():
+    """处理OCR图片识别请求"""
+    try:
+        # 检查是否有文件上传
+        if 'image' not in request.files:
+            return jsonify({'success': False, 'error': '没有上传图片文件'}), 400
+
+        file = request.files['image']
+        if file.filename == '':
+            return jsonify({'success': False, 'error': '没有选择文件'}), 400
+
+        # 检查文件类型
+        allowed_extensions = {'png', 'jpg', 'jpeg', 'gif', 'bmp', 'tiff', 'webp'}
+        file_ext = file.filename.rsplit('.', 1)[1].lower() if '.' in file.filename else ''
+
+        if file_ext not in allowed_extensions:
+            return jsonify({'success': False, 'error': '不支持的文件格式'}), 400
+
+        # 读取图片数据
+        image_data = file.read()
+
+        # 检查文件大小（限制为10MB）
+        if len(image_data) > 10 * 1024 * 1024:
+            return jsonify({'success': False, 'error': '文件大小超过限制（10MB）'}), 400
+
+        logger.info(f"开始处理OCR请求，文件大小: {len(image_data)} bytes")
+
+        # 使用OCR服务处理图片
+        result = ocr_service.process_image(image_data)
+
+        if result['success']:
+            logger.info(f"OCR处理成功，识别到 {result['field_count']} 个字段")
+            return jsonify(result)
+        else:
+            logger.error(f"OCR处理失败: {result.get('error', '未知错误')}")
+            # 对于OCR不可用的情况，返回200状态码但success=False
+            # 这样前端可以正确处理错误信息
+            return jsonify(result), 200
+
+    except Exception as e:
+        logger.error(f"OCR处理异常: {str(e)}")
+        return jsonify({
+            'success': False,
+            'error': f'服务器处理错误: {str(e)}',
+            'extracted_text': '',
+            'parsed_fields': {},
+            'field_count': 0
+        }), 500
+
 if __name__ == '__main__':
-    app.run(debug=True, port=5001, host='localhost')
+    # 开发环境配置
+    port = int(os.environ.get('PORT', 5001))
+    host = os.environ.get('HOST', 'localhost')
+    debug = os.environ.get('FLASK_ENV') != 'production'
+
+    app.run(debug=debug, port=port, host=host)
