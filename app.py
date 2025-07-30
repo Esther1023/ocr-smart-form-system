@@ -1,20 +1,20 @@
 from flask import Flask, render_template, request, send_file, jsonify, redirect, url_for, session
-from template_handler import TemplateHandler
-from ocr_service import OCRService
-from config import config
 import os
 import tempfile
 import pandas as pd
 from datetime import datetime
 import logging
 
-# 获取环境配置
-env = os.environ.get('FLASK_ENV', 'development')
-app_config = config.get(env, config['default'])
+# 延迟导入OCR相关模块，避免启动时失败
+template_handler = None
+ocr_service = None
 
 # 创建Flask应用
 app = Flask(__name__)
-app.config.from_object(app_config)
+
+# 简化配置
+app.secret_key = os.environ.get('SECRET_KEY', 'dev-secret-key')
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB
 
 # 设置日志记录
 log_dir = 'logs'
@@ -561,7 +561,7 @@ def ocr_process():
 
 if __name__ == '__main__':
     # 环境配置
-    port = int(os.environ.get('PORT', 5001))
+    port = int(os.environ.get('PORT', 8080))
     # 生产环境使用0.0.0.0，开发环境使用localhost
     if os.environ.get('FLASK_ENV') == 'production':
         host = '0.0.0.0'
