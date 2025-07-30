@@ -132,6 +132,71 @@
     margin-bottom: 10px;
 }
 
+.friendly-message {
+    text-align: center;
+    padding: 25px 20px;
+    color: var(--success-color);
+    font-size: 16px;
+    font-weight: 500;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    border: 2px solid var(--success-color);
+    margin: 10px 0;
+    line-height: 1.5;
+}
+
+.friendly-message::before {
+    content: '✅';
+    display: block;
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.no-customers {
+    text-align: center;
+    padding: 25px 20px;
+    color: var(--info-color);
+    font-size: 16px;
+    font-weight: 500;
+    background-color: #e3f2fd;
+    border-radius: 8px;
+    border: 2px solid var(--info-color);
+    margin: 10px 0;
+    line-height: 1.5;
+}
+
+.no-customers::before {
+    content: '📅';
+    display: block;
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+/* 客户项目样式优化 */
+.customer-item {
+    border-left: 4px solid var(--primary-color);
+    transition: all 0.3s ease;
+}
+
+.customer-item:hover {
+    border-left-color: var(--success-color);
+}
+
+.customer-field-value.expiry-date {
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.customer-field-value.user-id {
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+}
+
+.customer-field-value.sales-person {
+    color: var(--success-color);
+    font-weight: 500;
+}
+
 .expiring-customers-header {
     display: none;
 }

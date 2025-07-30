@@ -1335,41 +1335,42 @@
             const listContainer = document.getElementById('expiringCustomersList');
             const boardTitle = document.querySelector('.customer-board-box h4');
 
-            // 更新看板标题
+            // 更新看板标题 - 使用后端提供的用户友好标题
             if (title) {
-                if (count !== undefined) {
-                    boardTitle.textContent = `${title} (${count}个)`;
-                } else {
-                    boardTitle.textContent = title;
-                }
+                boardTitle.textContent = title;
             }
 
-            // 如果有特殊消息（如周末提示），显示消息
+            // 如果有特殊消息（如周末提示或无客户提示），显示消息
             if (message) {
-                listContainer.innerHTML = `<div class="weekend-message">${message}</div>`;
+                listContainer.innerHTML = `<div class="friendly-message">${message}</div>`;
                 return;
             }
 
             if (!customers || customers.length === 0) {
-                listContainer.innerHTML = '<div class="no-customers">暂无即将到期的客户</div>';
+                listContainer.innerHTML = '<div class="no-customers">今日无客户到期，可以专注其他工作</div>';
                 return;
             }
 
             let html = '';
-            customers.forEach(customer => {
+            customers.forEach((customer, index) => {
+                // 确保数据安全显示，避免undefined
+                const expiryDate = customer.expiry_date || '日期待确认';
+                const userId = customer.user_id || '信息待完善';
+                const renewalSales = customer.renewal_sales || '待分配';
+
                 html += `
-                    <div class="customer-item">
+                    <div class="customer-item" data-index="${index}">
                         <div class="customer-field">
                             <div class="customer-field-label">到期时间</div>
-                            <div class="customer-field-value">${customer.expiry_date || '未指定'}</div>
+                            <div class="customer-field-value expiry-date">${expiryDate}</div>
                         </div>
                         <div class="customer-field">
                             <div class="customer-field-label">用户ID</div>
-                            <div class="customer-field-value">${customer.user_id || '未指定'}</div>
+                            <div class="customer-field-value user-id">${userId}</div>
                         </div>
                         <div class="customer-field">
                             <div class="customer-field-label">责任销售</div>
-                            <div class="customer-field-value">${customer.renewal_sales || '未指定'}</div>
+                            <div class="customer-field-value sales-person">${renewalSales}</div>
                         </div>
                     </div>
                 `;

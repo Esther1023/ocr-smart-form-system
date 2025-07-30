@@ -576,10 +576,17 @@ def get_expiring_customers():
                         logger.info(f"  使用销售字段: {sales_field_used} -> 值: {renewal_sales}")
                         logger.info(f"  到期日期: {expiry_date.strftime('%Y年%m月%d日')}")
 
+                        # 格式化日期为用户友好格式
+                        expiry_date_display = expiry_date.strftime('%m月%d日')
+
+                        # 确保数据完整性，避免显示技术错误信息
+                        final_user_id = user_id if user_id and user_id != '未指定' else '暂无信息'
+                        final_renewal_sales = renewal_sales if renewal_sales and renewal_sales != '未指定' else '暂无信息'
+
                         expiring_customers.append({
-                            'expiry_date': expiry_date.strftime('%Y年%m月%d日'),  # 到期时间
-                            'user_id': user_id,  # 用户ID
-                            'renewal_sales': renewal_sales,  # 责任销售
+                            'expiry_date': expiry_date_display,  # 用户友好的到期时间格式
+                            'user_id': final_user_id,  # 用户ID
+                            'renewal_sales': final_renewal_sales,  # 责任销售
                             'expiry_date_sort': expiry_date  # 用于排序的日期对象
                         })
                 except Exception as e:
@@ -593,12 +600,29 @@ def get_expiring_customers():
         for customer in expiring_customers:
             customer.pop('expiry_date_sort', None)
         
+        # 生成用户友好的标题和描述
+        if len(expiring_customers) == 0:
+            if start_date == end_date:
+                user_friendly_title = f"{start_date.strftime('%m月%d日')}无客户到期"
+                user_message = f"今日({start_date.strftime('%m月%d日')})无客户到期，可以安心工作"
+            else:
+                user_friendly_title = f"{start_date.strftime('%m月%d日')}至{end_date.strftime('%m月%d日')}无客户到期"
+                user_message = f"周末({start_date.strftime('%m月%d日')}至{end_date.strftime('%m月%d日')})无客户到期"
+        else:
+            if start_date == end_date:
+                user_friendly_title = f"{start_date.strftime('%m月%d日')}到期客户 ({len(expiring_customers)}个)"
+                user_message = None
+            else:
+                user_friendly_title = f"{start_date.strftime('%m月%d日')}至{end_date.strftime('%m月%d日')}到期客户 ({len(expiring_customers)}个)"
+                user_message = None
+
         logger.info(f"找到{len(expiring_customers)}个即将过期的客户")
         return jsonify({
             'expiring_customers': expiring_customers,
-            'title': title,
+            'title': user_friendly_title,
             'count': len(expiring_customers),
-            'date_range': f"{start_date.strftime('%Y-%m-%d')} 至 {end_date.strftime('%Y-%m-%d')}"
+            'date_range': f"{start_date.strftime('%m月%d日')} 至 {end_date.strftime('%m月%d日')}",
+            'message': user_message
         })
 
     except Exception as e:
