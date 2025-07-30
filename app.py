@@ -37,8 +37,13 @@ else:
 
 logger = logging.getLogger(__name__)
 
-# 初始化OCR服务
-ocr_service = OCRService()
+# 初始化OCR服务（容错处理）
+try:
+    ocr_service = OCRService()
+    logger.info("OCR服务初始化成功")
+except Exception as e:
+    logger.warning(f"OCR服务初始化失败: {str(e)}")
+    ocr_service = None
 
 # 存储最后导入时间
 last_import_time = None
@@ -48,20 +53,17 @@ last_import_time = None
 def health_check():
     """健康检查端点，用于监控服务状态"""
     try:
-        # 检查OCR服务是否可用
-        ocr_status = "available" if ocr_service else "unavailable"
-
         return jsonify({
             'status': 'healthy',
             'timestamp': datetime.now().isoformat(),
             'version': '1.0.0',
+            'environment': os.environ.get('FLASK_ENV', 'development'),
             'services': {
-                'ocr': ocr_status,
+                'flask': 'available',
                 'template_handler': 'available'
             }
         }), 200
     except Exception as e:
-        logger.error(f"健康检查失败: {str(e)}")
         return jsonify({
             'status': 'unhealthy',
             'error': str(e),
@@ -504,6 +506,13 @@ def generate():
 def ocr_process():
     """处理OCR图片识别请求"""
     try:
+        # 检查OCR服务是否可用
+        if ocr_service is None:
+            return jsonify({
+                'success': False,
+                'error': 'OCR服务暂时不可用，请稍后再试'
+            }), 503
+
         # 检查是否有文件上传
         if 'image' not in request.files:
             return jsonify({'success': False, 'error': '没有上传图片文件'}), 400
