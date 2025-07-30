@@ -66,7 +66,7 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="company_name">公司名称（必填）</label>
+                            <label for="company_name">账号-企业名称（必填）</label>
                             <div class="input-group">
                                 <input type="text" class="form-control" name="company_name" id="company_name" required
                                     oninput="debounceQueryByCompanyName(event)" placeholder="输入2个字符以上开始搜索">
@@ -124,44 +124,36 @@
                         <div id="customerInfo" class="form-group full-width" style="display: none;">
                             <div class="customer-info-box">
                                 <div class="info-row">
-                                    <label>公司名称：</label>
-                                    <span id="companyName"></span>
+                                    <label>账号-企业名称：</label>
+                                    <span id="accountCompanyName"></span>
                                 </div>
                                 <div class="info-row">
-                                    <label>客户类型：</label>
-                                    <span id="customerType"></span>
+                                    <label>集成模式：</label>
+                                    <span id="integrationMode"></span>
                                 </div>
                                 <div class="info-row">
-                                    <label>客户归属战区：</label>
-                                    <span id="customerRegion"></span>
-                                </div>
-                                <div class="info-row">
-                                    <label>续费责任销售：</label>
-                                    <span id="salesPerson"></span>
-                                </div>
-                                <div class="info-row">
-                                    <label>简道云账号：</label>
-                                    <span id="jdyAccountInfo"></span>
-                                </div>
-                                <div class="info-row">
-                                    <label>版本到期时间：</label>
+                                    <label>到期日期：</label>
                                     <span id="expiryDate"></span>
-                                </div>
-                                <div class="info-row">
-                                    <label>版本：</label>
-                                    <span id="version"></span>
-                                </div>
-                                <div class="info-row">
-                                    <label>账号数量：</label>
-                                    <span id="accountCount"></span>
-                                </div>
-                                <div class="info-row">
-                                    <label>付费中账号数量：</label>
-                                    <span id="paidAccountCount"></span>
                                 </div>
                                 <div class="info-row">
                                     <label>应续ARR：</label>
                                     <span id="uidArr"></span>
+                                </div>
+                                <div class="info-row">
+                                    <label>客户分类：</label>
+                                    <span id="customerClassification"></span>
+                                </div>
+                                <div class="info-row">
+                                    <label>续费责任销售：</label>
+                                    <span id="renewalSales"></span>
+                                </div>
+                                <div class="info-row">
+                                    <label>责任销售中英文：</label>
+                                    <span id="salesChineseEnglish"></span>
+                                </div>
+                                <div class="info-row">
+                                    <label>简道云销售：</label>
+                                    <span id="jiandaoyunSales"></span>
                                 </div>
                             </div>
                         </div>
@@ -829,7 +821,7 @@
 
         function getFieldLabel(fieldName) {
             const labels = {
-                'company_name': '公司名称',
+                'company_name': '账号-企业名称',
                 'tax_number': '税号',
                 'reg_address': '注册地址',
                 'reg_phone': '注册电话',
@@ -925,10 +917,10 @@
             }
 
             if (appliedCount > 0) {
-                // 触发相关事件（如公司名称查询）
+                // 触发相关事件（如账号-企业名称查询）
                 const companyNameField = document.querySelector('[name="company_name"]');
                 if (companyNameField && companyNameField.value) {
-                    // 触发公司名称查询
+                    // 触发账号-企业名称查询
                     setTimeout(() => {
                         const event = new Event('input', { bubbles: true });
                         companyNameField.dispatchEvent(event);
@@ -1113,19 +1105,17 @@
                 const customerData = data.results[0];
 
                 // 显示客户信息
-                document.getElementById('companyName').textContent = customerData.company_name || '';
-                document.getElementById('customerType').textContent = customerData.customer_type || '';
-                document.getElementById('customerRegion').textContent = customerData.customer_region || '';
-                document.getElementById('salesPerson').textContent = customerData.sales || '';
-                document.getElementById('jdyAccountInfo').textContent = customerData.jdy_account || '';
+                document.getElementById('accountCompanyName').textContent = customerData.account_company_name || '';
+                document.getElementById('integrationMode').textContent = customerData.integration_mode || '';
                 document.getElementById('expiryDate').textContent = customerData.expiry_date || '';
-                document.getElementById('version').textContent = customerData.version || '';
-                document.getElementById('accountCount').textContent = customerData.account_count || '';
-                document.getElementById('paidAccountCount').textContent = customerData.paid_account_count || '';
                 document.getElementById('uidArr').textContent = customerData.uid_arr || '';
+                document.getElementById('customerClassification').textContent = customerData.customer_classification || '';
+                document.getElementById('renewalSales').textContent = customerData.renewal_sales || '';
+                document.getElementById('salesChineseEnglish').textContent = customerData.sales_chinese_english || '';
+                document.getElementById('jiandaoyunSales').textContent = customerData.jiandaoyun_sales || '';
 
-                // 自动填充公司名称
-                document.querySelector('[name="company_name"]').value = customerData.company_name || '';
+                // 自动填充账号-企业名称
+                document.querySelector('[name="company_name"]').value = customerData.account_company_name || '';
 
                 // 显示客户信息框
                 document.getElementById('customerInfo').style.display = 'block';
@@ -1135,7 +1125,7 @@
             }
         }
 
-        // 客户查询功能（通过公司名称）
+        // 客户查询功能（通过账号-企业名称）
         const debounceQueryByCompanyName = debounce((event) => {
             const companyName = event.target.value;
             if (companyName.length < 2) return; // 至少输入2个字符才开始查询
@@ -1144,7 +1134,7 @@
 
         async function queryByCompanyName(companyName) {
             try {
-                console.log('查询公司名称:', companyName); // 调试输出
+                console.log('查询账号-企业名称:', companyName); // 调试输出
                 const response = await fetch('/query_customer', {
                     method: 'POST',
                     headers: {
@@ -1182,20 +1172,18 @@
         // 更新客户信息显示
         function updateCustomerInfo(customerData) {
             // 显示客户信息
-            document.getElementById('companyName').textContent = customerData.company_name || '';
-            document.getElementById('customerType').textContent = customerData.customer_type || '';
-            document.getElementById('customerRegion').textContent = customerData.customer_region || '';
-            document.getElementById('salesPerson').textContent = customerData.sales || '';
-            document.getElementById('jdyAccountInfo').textContent = customerData.jdy_account || '';
+            document.getElementById('accountCompanyName').textContent = customerData.account_company_name || '';
+            document.getElementById('integrationMode').textContent = customerData.integration_mode || '';
             document.getElementById('expiryDate').textContent = customerData.expiry_date || '';
-            document.getElementById('version').textContent = customerData.version || '';
-            document.getElementById('accountCount').textContent = customerData.account_count || '';
-            document.getElementById('paidAccountCount').textContent = customerData.paid_account_count || '';
             document.getElementById('uidArr').textContent = customerData.uid_arr || '';
+            document.getElementById('customerClassification').textContent = customerData.customer_classification || '';
+            document.getElementById('renewalSales').textContent = customerData.renewal_sales || '';
+            document.getElementById('salesChineseEnglish').textContent = customerData.sales_chinese_english || '';
+            document.getElementById('jiandaoyunSales').textContent = customerData.jiandaoyun_sales || '';
 
             // 自动填充简道云账号
-            if (customerData.jdy_account) {
-                document.querySelector('[name="jdy_account"]').value = customerData.jdy_account;
+            if (customerData.jiandaoyun_sales) {
+                document.querySelector('[name="jdy_account"]').value = customerData.jiandaoyun_sales;
             }
 
             // 显示客户信息框
@@ -1254,7 +1242,7 @@
                 const endYear = document.getElementById('endYear').value;
                 const currentDate = new Date().toISOString().slice(0, 10).replace(/-/g, '');
                 
-                // 新的文件命名格式：开始年份-结束年份+公司名称+帆软简道云续费合同+合同生成日期
+                // 新的文件命名格式：开始年份-结束年份+账号-企业名称+帆软简道云续费合同+合同生成日期
                 a.download = `${startYear}-${endYear}${companyName}-帆软简道云续费合同${currentDate}.docx`;
                 
                 // 触发下载
