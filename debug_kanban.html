@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>看板调试页面</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .debug-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+        .test-button:hover {
+            background: #0056b3;
+        }
+        .test-button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        /* 复制主页面的看板样式 */
+        .customer-board-box {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 15px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .customer-board-box h4 {
+            margin: 0 0 15px 0;
+            color: #333;
+            font-size: 16px;
+            font-weight: 600;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 8px;
+        }
+
+        .customers-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .customer-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            margin-bottom: 8px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .customer-item:hover {
+            background-color: #f8f9fa;
+            border-color: #007bff;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .customer-field {
+            flex: 1;
+            margin-right: 15px;
+            font-size: 14px;
+        }
+
+        .customer-field:last-child {
+            margin-right: 0;
+        }
+
+        .customer-field-label {
+            font-weight: 600;
+            color: #666;
+            font-size: 12px;
+            margin-bottom: 2px;
+        }
+
+        .customer-field-value {
+            color: #333;
+            font-weight: 500;
+        }
+
+        .friendly-message {
+            text-align: center;
+            padding: 25px 20px;
+            color: #28a745;
+            font-size: 16px;
+            font-weight: 500;
+            background: #d4edda;
+            border-radius: 8px;
+            border: 2px solid #28a745;
+            margin: 10px 0;
+            line-height: 1.5;
+        }
+
+        .no-customers {
+            text-align: center;
+            padding: 25px 20px;
+            color: #6c757d;
+            font-size: 16px;
+            font-weight: 500;
+            background: #e2e3e5;
+            border-radius: 8px;
+            border: 2px solid #6c757d;
+            margin: 10px 0;
+            line-height: 1.5;
+        }
+
+        .log-area {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 20px;
+            max-height: 200px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="debug-container">
+        <h1>🔧 看板功能调试</h1>
+        
+        <div>
+            <button class="test-button" id="testButton" onclick="testKanban()">测试看板功能</button>
+            <button class="test-button" onclick="testWithMockData()">测试模拟数据</button>
+            <button class="test-button" onclick="clearLog()">清除日志</button>
+        </div>
+        
+        <!-- 看板容器 -->
+        <div id="expiringCustomersBoard" class="customer-board-box" style="display: none;">
+            <h4>最近到期客户</h4>
+            <div id="expiringCustomersList" class="customers-list">
+                <!-- 动态生成的客户列表 -->
+            </div>
+        </div>
+        
+        <div class="log-area" id="logArea">
+            点击按钮开始测试...
+        </div>
+    </div>
+
+    <script>
+        function log(message) {
+            const logArea = document.getElementById('logArea');
+            const timestamp = new Date().toLocaleTimeString();
+            logArea.innerHTML += `[${timestamp}] ${message}\n`;
+            logArea.scrollTop = logArea.scrollHeight;
+            console.log(message);
+        }
+
+        function clearLog() {
+            document.getElementById('logArea').innerHTML = '日志已清除...\n';
+        }
+
+        async function testKanban() {
+            const button = document.getElementById('testButton');
+            const board = document.getElementById('expiringCustomersBoard');
+            
+            log('🚀 开始测试看板功能...');
+            
+            button.textContent = '测试中...';
+            button.disabled = true;
+            
+            try {
+                // 显示看板
+                board.style.display = 'block';
+                
+                log('📡 发送API请求...');
+                const response = await fetch('/get_expiring_customers');
+                
+                log(`📥 收到响应: ${response.status}`);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    log(`✅ 数据获取成功: ${JSON.stringify(data, null, 2)}`);
+                    
+                    displayExpiringCustomers(
+                        data.expiring_customers,
+                        data.title,
+                        data.count,
+                        data.message
+                    );
+                } else {
+                    log(`❌ API请求失败: ${response.status}`);
+                }
+            } catch (error) {
+                log(`💥 请求异常: ${error.message}`);
+            } finally {
+                button.textContent = '测试看板功能';
+                button.disabled = false;
+            }
+        }
+
+        function testWithMockData() {
+            log('🎭 测试模拟数据...');
+            
+            const board = document.getElementById('expiringCustomersBoard');
+            board.style.display = 'block';
+            
+            const mockData = [
+                {
+                    user_id: 'JDY001234',
+                    expiry_date: '2025年08月01日',
+                    renewal_sales: '朱晓琳'
+                },
+                {
+                    user_id: 'JDY005678',
+                    expiry_date: '2025年08月01日',
+                    renewal_sales: '张三'
+                }
+            ];
+            
+            displayExpiringCustomers(mockData, '明天到期客户 (2个)', 2, null);
+            log('✅ 模拟数据显示完成');
+        }
+
+        function displayExpiringCustomers(customers, title, count, message) {
+            log('🎯 开始显示看板数据...');
+            
+            const listContainer = document.getElementById('expiringCustomersList');
+            const boardTitle = document.querySelector('.customer-board-box h4');
+
+            // 清空容器
+            listContainer.innerHTML = '';
+
+            // 更新看板标题
+            if (title) {
+                boardTitle.textContent = title;
+                log(`✅ 更新标题: ${title}`);
+            }
+
+            // 显示特殊消息
+            if (message) {
+                listContainer.innerHTML = `
+                    <div class="friendly-message">
+                        <div style="font-size: 20px; margin-bottom: 8px;">🎉</div>
+                        <div>${message}</div>
+                    </div>
+                `;
+                log(`✅ 显示消息: ${message}`);
+                return;
+            }
+
+            // 无客户数据时的显示
+            if (!customers || customers.length === 0) {
+                listContainer.innerHTML = `
+                    <div class="no-customers">
+                        <div style="font-size: 20px; margin-bottom: 8px;">📅</div>
+                        <div>今日无客户到期，可以专注其他工作</div>
+                    </div>
+                `;
+                log('✅ 显示空状态');
+                return;
+            }
+
+            // 显示客户列表
+            log(`🔄 开始渲染 ${customers.length} 个客户`);
+            
+            let html = '';
+            customers.forEach((customer, index) => {
+                const expiryDate = cleanValue(customer.expiry_date, '日期待确认');
+                const userId = cleanValue(customer.user_id, '信息待完善');
+                const renewalSales = cleanValue(customer.renewal_sales, '待分配');
+                
+                log(`📋 客户 ${index + 1}: ${userId} - ${expiryDate} - ${renewalSales}`);
+
+                html += `
+                    <div class="customer-item" data-index="${index}">
+                        <div class="customer-field">
+                            <div class="customer-field-label">🗓️ 到期时间</div>
+                            <div class="customer-field-value">${expiryDate}</div>
+                        </div>
+                        <div class="customer-field">
+                            <div class="customer-field-label">👤 用户ID</div>
+                            <div class="customer-field-value">${userId}</div>
+                        </div>
+                        <div class="customer-field">
+                            <div class="customer-field-label">💼 责任销售</div>
+                            <div class="customer-field-value">${renewalSales}</div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            listContainer.innerHTML = html;
+            log('✅ 看板渲染完成');
+        }
+
+        function cleanValue(value, defaultValue) {
+            if (!value || 
+                value === 'undefined' || 
+                value === 'null' || 
+                value === '未指定' || 
+                value.toString().trim() === '') {
+                return defaultValue;
+            }
+            return value.toString().trim();
+        }
+    </script>
+</body>
+</html>

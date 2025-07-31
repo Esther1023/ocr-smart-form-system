@@ -16,6 +16,11 @@ app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'dev-secret-key')
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB
 
+# 禁用模板缓存，确保开发时能看到最新更改
+app.config['TEMPLATES_AUTO_RELOAD'] = True
+app.jinja_env.auto_reload = True
+app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
+
 # 设置日志记录
 log_dir = 'logs'
 if not os.path.exists(log_dir):
@@ -155,6 +160,36 @@ def index():
 @app.route('/test', methods=['GET'])
 def test():
     return 'Hello, World!'
+
+@app.route('/test_frontend.html')
+def test_frontend():
+    """提供前端测试页面"""
+    try:
+        with open('test_frontend.html', 'r', encoding='utf-8') as f:
+            content = f.read()
+        return content
+    except FileNotFoundError:
+        return "测试页面不存在", 404
+
+@app.route('/debug_kanban.html')
+def debug_kanban():
+    """提供看板调试页面"""
+    try:
+        with open('debug_kanban.html', 'r', encoding='utf-8') as f:
+            content = f.read()
+        return content
+    except FileNotFoundError:
+        return "调试页面不存在", 404
+
+@app.route('/simple_kanban_test.html')
+def simple_kanban_test():
+    """提供简单看板测试页面"""
+    try:
+        with open('simple_kanban_test.html', 'r', encoding='utf-8') as f:
+            content = f.read()
+        return content
+    except FileNotFoundError:
+        return "测试页面不存在", 404
 @app.route('/upload_excel', methods=['POST'])
 @login_required
 def upload_excel():
@@ -293,125 +328,6 @@ def get_target_date_range():
         end_date = now + pd.Timedelta(days=2)    # 周日
         title = "周末到期的客户"
         logger.info(f"周五，显示周末到期客户: {start_date.strftime('%Y-%m-%d')} 至 {end_date.strftime('%Y-%m-%d')}")
-    elif weekday == 5:  # 周六
-        # 显示周日到期的客户
-        start_date = now + pd.Timedelta(days=1)  # 周日
-        end_date = start_date
-        title = "明天到期的客户"
-        logger.info(f"周六，显示周日到期客户: {start_date.strftime('%Y-%m-%d')}")
-    else:  # 周日 (weekday == 6)
-        # 显示周一到期的客户
-        start_date = now + pd.Timedelta(days=1)  # 周一
-        end_date = start_date
-        title = "明天到期的客户"
-        logger.info(f"周日，显示周一到期客户: {start_date.strftime('%Y-%m-%d')}")
-
-    return start_date, end_date, title
-
-def is_in_holiday_period(date):
-    """检查给定日期是否在法定节假日期间"""
-    holidays = get_china_holidays(date.year)
-    for holiday_start, holiday_end in holidays:
-        if holiday_start <= date.date() <= holiday_end:
-            return True, pd.Timestamp(holiday_end)
-    return False, None
-
-def is_before_holiday(date):
-    """检查给定日期是否为节假日前的最后一个工作日"""
-    holidays = get_china_holidays(date.year)
-    for holiday_start, holiday_end in holidays:
-        # 检查明天是否是节假日的开始
-        tomorrow = (date + pd.Timedelta(days=1)).date()
-        if tomorrow == holiday_start:
-            return True
-    return False
-
-def get_next_holiday_period(date):
-    """获取下一个节假日的开始和结束日期"""
-    holidays = get_china_holidays(date.year)
-    for holiday_start, holiday_end in holidays:
-        if holiday_start > date.date():
-            return pd.Timestamp(holiday_start), pd.Timestamp(holiday_end)
-
-    # 如果当年没有更多节假日，检查下一年
-    next_year_holidays = get_china_holidays(date.year + 1)
-    if next_year_holidays:
-        holiday_start, holiday_end = next_year_holidays[0]
-        return pd.Timestamp(holiday_start), pd.Timestamp(holiday_end)
-
-    return None, None
-
-def get_china_holidays(year):
-    """获取中国法定节假日列表（简化版本）"""
-    import datetime
-
-    holidays = []
-
-    # 元旦 (1月1日)
-    holidays.append((datetime.date(year, 1, 1), datetime.date(year, 1, 1)))
-
-    # 春节 (农历正月初一，这里使用近似日期)
-    if year == 2025:
-        holidays.append((datetime.date(2025, 1, 28), datetime.date(2025, 2, 3)))  # 春节假期
-    elif year == 2026:
-        holidays.append((datetime.date(2026, 2, 16), datetime.date(2026, 2, 22)))  # 春节假期
-
-    # 清明节 (4月4日或5日)
-    holidays.append((datetime.date(year, 4, 4), datetime.date(year, 4, 6)))
-
-    # 劳动节 (5月1日)
-    holidays.append((datetime.date(year, 5, 1), datetime.date(year, 5, 3)))
-
-    # 端午节 (农历五月初五，这里使用近似日期)
-    if year == 2025:
-        holidays.append((datetime.date(2025, 5, 31), datetime.date(2025, 6, 2)))
-    elif year == 2026:
-        holidays.append((datetime.date(2026, 6, 19), datetime.date(2026, 6, 21)))
-
-    # 中秋节 (农历八月十五，这里使用近似日期)
-    if year == 2025:
-        holidays.append((datetime.date(2025, 10, 6), datetime.date(2025, 10, 8)))
-    elif year == 2026:
-        holidays.append((datetime.date(2026, 9, 25), datetime.date(2026, 9, 27)))
-
-    # 国庆节 (10月1日)
-    holidays.append((datetime.date(year, 10, 1), datetime.date(year, 10, 7)))
-
-    return holidays
-
-def get_target_date_range():
-    """根据当前日期和工作日规则计算目标查询日期范围"""
-    now = pd.Timestamp.now()
-    weekday = now.weekday()  # 0=周一, 1=周二, ..., 6=周日
-
-    # 检查是否为法定节假日
-    is_holiday_period, holiday_end = is_in_holiday_period(now)
-
-    if is_holiday_period:
-        # 如果在节假日期间，显示假期结束后第一个工作日到期的客户
-        start_date = holiday_end + pd.Timedelta(days=1)
-        end_date = start_date
-        title = "假期后到期的客户"
-        logger.info(f"节假日期间，显示假期后到期客户: {start_date.strftime('%Y-%m-%d')}")
-    elif is_before_holiday(now):
-        # 如果是节假日前的最后一个工作日，显示整个假期期间到期的客户
-        holiday_start, holiday_end = get_next_holiday_period(now)
-        start_date = holiday_start
-        end_date = holiday_end
-        title = "假期期间到期的客户"
-        logger.info(f"节假日前，显示假期期间到期客户: {start_date.strftime('%Y-%m-%d')} 至 {end_date.strftime('%Y-%m-%d')}")
-    elif weekday < 4:  # 周一至周四 (0-3)
-        # 显示明天到期的客户
-        start_date = now + pd.Timedelta(days=1)
-        end_date = start_date
-        title = "明天到期的客户"
-        logger.info(f"平日({['周一','周二','周三','周四'][weekday]})，显示明天到期客户: {start_date.strftime('%Y-%m-%d')}")
-    elif weekday == 4:  # 周五
-        # 显示整个周末期间（周六和周日）到期的客户
-        start_date = now + pd.Timedelta(days=1)  # 周六
-        end_date = now + pd.Timedelta(days=2)    # 周日
-        title = "周末到期的客户"
-        logger.info(f"周五，显示周末到期客户: {start_date.strftime('%Y-%m-%d')} 至 {end_date.strftime('%Y-%m-%d')}")
     else:  # 周末 (weekday == 5 or 6)
         # 周末不用提醒，返回空范围
         return None, None, "周末休息，无需提醒"
@@ -488,6 +404,7 @@ def get_china_holidays(year):
     holidays.append((datetime.date(year, 10, 1), datetime.date(year, 10, 7)))
 
     return holidays
+
 
 @app.route('/get_expiring_customers')
 @login_required

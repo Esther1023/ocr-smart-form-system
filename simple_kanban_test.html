@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>简单看板测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+        .btn:hover {
+            background: #0056b3;
+        }
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .customer-board-box {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 15px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .customer-board-box h4 {
+            margin: 0 0 15px 0;
+            color: #333;
+            font-size: 16px;
+            font-weight: 600;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 8px;
+        }
+
+        .customers-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .customer-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            margin-bottom: 8px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .customer-item:hover {
+            background-color: #f8f9fa;
+            border-color: #007bff;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .customer-field {
+            flex: 1;
+            margin-right: 15px;
+            font-size: 14px;
+        }
+
+        .customer-field:last-child {
+            margin-right: 0;
+        }
+
+        .customer-field-label {
+            font-weight: 600;
+            color: #666;
+            font-size: 12px;
+            margin-bottom: 2px;
+        }
+
+        .customer-field-value {
+            color: #333;
+            font-weight: 500;
+        }
+
+        .friendly-message {
+            text-align: center;
+            padding: 25px 20px;
+            color: #28a745;
+            font-size: 16px;
+            font-weight: 500;
+            background: #d4edda;
+            border-radius: 8px;
+            border: 2px solid #28a745;
+            margin: 10px 0;
+            line-height: 1.5;
+        }
+
+        .no-customers {
+            text-align: center;
+            padding: 25px 20px;
+            color: #6c757d;
+            font-size: 16px;
+            font-weight: 500;
+            background: #e2e3e5;
+            border-radius: 8px;
+            border: 2px solid #6c757d;
+            margin: 10px 0;
+            line-height: 1.5;
+        }
+
+        .status {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .status.success { background: #d4edda; color: #155724; }
+        .status.error { background: #f8d7da; color: #721c24; }
+        .status.info { background: #d1ecf1; color: #0c5460; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 简单看板测试</h1>
+        
+        <div>
+            <button class="btn" id="btn-daike-inline">KA看板</button>
+            <button class="btn" onclick="testElements()">检查元素</button>
+            <button class="btn" onclick="testAPI()">测试API</button>
+            <button class="btn" onclick="showMockData()">显示模拟数据</button>
+        </div>
+        
+        <div id="status"></div>
+        
+        <!-- 看板容器 -->
+        <div id="expiringCustomersBoard" class="form-group full-width" style="display: none;">
+            <div class="customer-board-box">
+                <h4>最近到期客户</h4>
+                <div id="expiringCustomersList" class="customers-list">
+                    <!-- 动态生成的客户列表 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showStatus(message, type = 'info') {
+            const statusDiv = document.getElementById('status');
+            statusDiv.innerHTML = `<div class="status ${type}">${message}</div>`;
+            console.log(`[${type.toUpperCase()}] ${message}`);
+        }
+
+        function testElements() {
+            showStatus('🔍 检查页面元素...', 'info');
+            
+            const button = document.getElementById('btn-daike-inline');
+            const board = document.getElementById('expiringCustomersBoard');
+            const list = document.getElementById('expiringCustomersList');
+            const title = document.querySelector('.customer-board-box h4');
+            
+            let results = [];
+            results.push(`按钮元素: ${button ? '✅ 存在' : '❌ 不存在'}`);
+            results.push(`看板容器: ${board ? '✅ 存在' : '❌ 不存在'}`);
+            results.push(`列表容器: ${list ? '✅ 存在' : '❌ 不存在'}`);
+            results.push(`标题元素: ${title ? '✅ 存在' : '❌ 不存在'}`);
+            
+            if (board) {
+                results.push(`看板显示状态: ${board.style.display}`);
+            }
+            
+            showStatus(results.join('<br>'), 'info');
+        }
+
+        async function testAPI() {
+            showStatus('📡 测试API连接...', 'info');
+            
+            try {
+                const response = await fetch('/get_expiring_customers');
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    showStatus(`✅ API响应成功<br>标题: ${data.title}<br>客户数量: ${data.expiring_customers?.length || 0}`, 'success');
+                    return data;
+                } else {
+                    showStatus(`❌ API响应失败: ${response.status}`, 'error');
+                }
+            } catch (error) {
+                showStatus(`❌ API请求异常: ${error.message}`, 'error');
+            }
+        }
+
+        function showMockData() {
+            showStatus('🎭 显示模拟数据...', 'info');
+            
+            const board = document.getElementById('expiringCustomersBoard');
+            board.style.display = 'block';
+            
+            const mockCustomers = [
+                {
+                    user_id: 'JDY001234',
+                    expiry_date: '2025年08月01日',
+                    renewal_sales: '朱晓琳'
+                },
+                {
+                    user_id: 'JDY005678',
+                    expiry_date: '2025年08月01日',
+                    renewal_sales: '张三'
+                }
+            ];
+            
+            displayExpiringCustomers(mockCustomers, '明天到期客户 (2个)', 2, null);
+            showStatus('✅ 模拟数据显示完成', 'success');
+        }
+
+        function displayExpiringCustomers(customers, title, count, message) {
+            console.log('🎯 显示看板数据:', { customers, title, count, message });
+            
+            const listContainer = document.getElementById('expiringCustomersList');
+            const boardTitle = document.querySelector('.customer-board-box h4');
+
+            if (!listContainer) {
+                console.error('❌ 列表容器未找到');
+                return;
+            }
+
+            if (!boardTitle) {
+                console.error('❌ 标题元素未找到');
+                return;
+            }
+
+            // 清空容器
+            listContainer.innerHTML = '';
+
+            // 更新看板标题
+            if (title) {
+                boardTitle.textContent = title;
+                console.log('✅ 更新标题:', title);
+            }
+
+            // 显示特殊消息
+            if (message) {
+                listContainer.innerHTML = `
+                    <div class="friendly-message">
+                        <div style="font-size: 20px; margin-bottom: 8px;">🎉</div>
+                        <div>${message}</div>
+                    </div>
+                `;
+                console.log('✅ 显示消息:', message);
+                return;
+            }
+
+            // 无客户数据时的显示
+            if (!customers || customers.length === 0) {
+                listContainer.innerHTML = `
+                    <div class="no-customers">
+                        <div style="font-size: 20px; margin-bottom: 8px;">📅</div>
+                        <div>今日无客户到期，可以专注其他工作</div>
+                    </div>
+                `;
+                console.log('✅ 显示空状态');
+                return;
+            }
+
+            // 显示客户列表
+            console.log(`🔄 开始渲染 ${customers.length} 个客户`);
+            
+            let html = '';
+            customers.forEach((customer, index) => {
+                const expiryDate = cleanValue(customer.expiry_date, '日期待确认');
+                const userId = cleanValue(customer.user_id, '信息待完善');
+                const renewalSales = cleanValue(customer.renewal_sales, '待分配');
+                
+                console.log(`📋 客户 ${index + 1}:`, { expiryDate, userId, renewalSales });
+
+                html += `
+                    <div class="customer-item" data-index="${index}">
+                        <div class="customer-field">
+                            <div class="customer-field-label">🗓️ 到期时间</div>
+                            <div class="customer-field-value">${expiryDate}</div>
+                        </div>
+                        <div class="customer-field">
+                            <div class="customer-field-label">👤 用户ID</div>
+                            <div class="customer-field-value">${userId}</div>
+                        </div>
+                        <div class="customer-field">
+                            <div class="customer-field-label">💼 责任销售</div>
+                            <div class="customer-field-value">${renewalSales}</div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            listContainer.innerHTML = html;
+            console.log('✅ 看板渲染完成');
+        }
+
+        function cleanValue(value, defaultValue) {
+            if (!value || 
+                value === 'undefined' || 
+                value === 'null' || 
+                value === '未指定' || 
+                value.toString().trim() === '') {
+                return defaultValue;
+            }
+            return value.toString().trim();
+        }
+
+        async function toggleExpiringCustomersBoard() {
+            const board = document.getElementById('expiringCustomersBoard');
+            const button = document.getElementById('btn-daike-inline');
+
+            console.log('🖱️ 看板按钮被点击');
+            showStatus('🚀 开始加载看板数据...', 'info');
+
+            if (board.style.display === 'none' || board.style.display === '') {
+                // 显示看板
+                console.log('🚀 开始加载看板数据...');
+                
+                // 更新按钮状态
+                const originalText = button.textContent;
+                button.textContent = '加载中...';
+                button.disabled = true;
+
+                try {
+                    // 显示加载状态
+                    board.style.display = 'block';
+                    const listContainer = document.getElementById('expiringCustomersList');
+                    listContainer.innerHTML = `
+                        <div style="text-align: center; padding: 40px; color: #666;">
+                            <div style="font-size: 24px; margin-bottom: 10px;">⏳</div>
+                            <div>正在加载客户数据...</div>
+                        </div>
+                    `;
+
+                    console.log('📡 发送API请求...');
+                    const response = await fetch('/get_expiring_customers');
+
+                    console.log('📥 收到响应:', {
+                        status: response.status,
+                        url: response.url,
+                        ok: response.ok
+                    });
+
+                    // 检查登录状态
+                    if (response.url.includes('/login')) {
+                        console.warn('⚠️ 需要重新登录');
+                        showStatus('❌ 登录已过期，请重新登录', 'error');
+                        window.location.href = '/login';
+                        return;
+                    }
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        console.log('✅ 数据获取成功:', data);
+                        
+                        // 显示数据
+                        displayExpiringCustomers(
+                            data.expiring_customers, 
+                            data.title, 
+                            data.count, 
+                            data.message
+                        );
+                        
+                        showStatus('✅ 看板显示完成', 'success');
+                        console.log('🎉 看板显示完成');
+                    } else {
+                        console.error('❌ API请求失败:', response.status);
+                        const errorText = await response.text();
+                        
+                        listContainer.innerHTML = `
+                            <div style="text-align: center; padding: 40px; color: #e53e3e;">
+                                <div style="font-size: 24px; margin-bottom: 10px;">❌</div>
+                                <div>数据加载失败</div>
+                                <div style="font-size: 12px; margin-top: 8px; color: #999;">
+                                    错误代码: ${response.status}
+                                </div>
+                            </div>
+                        `;
+                        showStatus(`❌ 数据加载失败: ${response.status}`, 'error');
+                    }
+                } catch (error) {
+                    console.error('💥 请求异常:', error);
+                    
+                    const listContainer = document.getElementById('expiringCustomersList');
+                    listContainer.innerHTML = `
+                        <div style="text-align: center; padding: 40px; color: #e53e3e;">
+                            <div style="font-size: 24px; margin-bottom: 10px;">🔌</div>
+                            <div>网络连接失败</div>
+                            <div style="font-size: 12px; margin-top: 8px; color: #999;">
+                                ${error.message}
+                            </div>
+                        </div>
+                    `;
+                    showStatus(`❌ 网络连接失败: ${error.message}`, 'error');
+                } finally {
+                    // 恢复按钮状态
+                    button.textContent = originalText;
+                    button.disabled = false;
+                }
+            } else {
+                // 隐藏看板
+                console.log('📴 隐藏看板');
+                board.style.display = 'none';
+                showStatus('📴 看板已隐藏', 'info');
+            }
+        }
+
+        // 页面加载完成后绑定事件
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('📄 页面加载完成');
+            showStatus('📄 页面加载完成，准备就绪', 'success');
+            
+            const kanbanButton = document.getElementById('btn-daike-inline');
+            if (kanbanButton) {
+                console.log('✅ 看板按钮找到，绑定事件监听器');
+                kanbanButton.addEventListener('click', function() {
+                    toggleExpiringCustomersBoard();
+                });
+                showStatus('✅ 看板按钮事件绑定成功', 'success');
+            } else {
+                console.error('❌ 看板按钮未找到: btn-daike-inline');
+                showStatus('❌ 看板按钮未找到', 'error');
+            }
+        });
+    </script>
+</body>
+</html>

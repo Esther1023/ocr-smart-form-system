@@ -160,15 +160,7 @@
                             </div>
                         </div>
 
-                        <!-- 最近到期客户看板 -->
-                        <div id="expiringCustomersBoard" class="form-group full-width" style="display: none;">
-                            <div class="customer-board-box">
-                                <h4>最近到期客户</h4>
-                                <div id="expiringCustomersList" class="customers-list">
-                                    <!-- 动态生成的客户列表 -->
-                                </div>
-                            </div>
-                        </div>
+
                     </div>
                 </div>
 
@@ -271,6 +263,77 @@
             </form>
         </div>
     </div>
+
+    <!-- KA看板弹窗 -->
+    <div id="kanban-modal" class="kanban-modal" style="display: none;">
+        <div class="kanban-modal-overlay" onclick="closeKanbanModal()"></div>
+        <div class="kanban-modal-content">
+            <div class="kanban-modal-header">
+                <h3 class="kanban-modal-title">
+                    <span class="kanban-icon">📊</span>
+                    <span id="kanban-title-text">KA客户看板</span>
+                    <span id="kanban-status" class="kanban-status">准备中</span>
+                </h3>
+                <button class="kanban-close-btn" onclick="closeKanbanModal()" title="关闭看板">×</button>
+            </div>
+            <div class="kanban-modal-body">
+                <div id="kanban-content">
+                    <!-- 动态内容将在这里生成 -->
+                    <div class="kanban-loading">
+                        <div class="loading-spinner"></div>
+                        <div class="loading-text">初始化看板...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        /* 临时修复看板显示问题 */
+        #kanban-content {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            position: relative !important;
+            z-index: 1 !important;
+            min-height: 200px !important;
+            background: white !important;
+            padding: 24px !important;
+        }
+
+        .kanban-modal {
+            display: flex !important;
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            z-index: 10000 !important;
+        }
+
+        .kanban-modal[style*="display: none"] {
+            display: none !important;
+        }
+
+        .kanban-modal-content {
+            position: relative !important;
+            background: white !important;
+            border-radius: 16px !important;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3) !important;
+            max-width: 90vw !important;
+            max-height: 90vh !important;
+            width: 800px !important;
+            min-height: 400px !important;
+            overflow: hidden !important;
+            margin: auto !important;
+        }
+
+        .kanban-loading, .kanban-message {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+    </style>
 
     <script src="/static/script.js"></script>
     <script>
@@ -573,26 +636,55 @@
                 }
             });
 
-            // 粘贴功能 - 改进版本
+            // 粘贴功能 - 增强调试版本
             document.addEventListener('paste', (e) => {
+                console.log('🔍 粘贴事件触发');
+
                 // 检查是否在输入框中粘贴
                 const activeElement = document.activeElement;
+                console.log('🎯 当前活动元素:', activeElement?.tagName, activeElement?.type);
+
                 if (activeElement && (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA')) {
+                    console.log('📝 在输入框中粘贴，允许正常文本粘贴');
                     return; // 允许在输入框中正常粘贴文本
                 }
 
                 const items = e.clipboardData.items;
-                for (let item of items) {
+                console.log('📋 剪贴板项目数量:', items.length);
+
+                let foundImage = false;
+                for (let i = 0; i < items.length; i++) {
+                    const item = items[i];
+                    console.log(`📎 项目 ${i}: 类型=${item.type}, 种类=${item.kind}`);
+
                     if (item.type.indexOf('image') !== -1) {
+                        console.log('🖼️ 发现图片，开始处理...');
                         e.preventDefault();
+                        foundImage = true;
+
                         const file = item.getAsFile();
                         if (file) {
+                            console.log('📁 获取文件成功:', {
+                                name: file.name,
+                                size: file.size,
+                                type: file.type,
+                                lastModified: file.lastModified
+                            });
+
                             handleFile(file);
                             // 显示提示
                             showPasteSuccess();
+                        } else {
+                            console.error('❌ 无法获取文件对象');
                         }
                         break;
                     }
+                }
+
+                if (!foundImage) {
+                    console.log('🚫 剪贴板中没有找到图片');
+                    // 显示友好提示
+                    showPasteHint();
                 }
             });
 
@@ -608,10 +700,16 @@
         }
 
         function handleFile(file) {
-            console.log('处理文件:', file.name, file.type, file.size);
+            console.log('📁 处理文件:', {
+                name: file.name,
+                type: file.type,
+                size: file.size,
+                sizeFormatted: (file.size / 1024).toFixed(2) + ' KB'
+            });
 
             // 检查文件是否存在
             if (!file) {
+                console.error('❌ 文件对象为空');
                 alert('未选择文件');
                 return;
             }
@@ -619,22 +717,26 @@
             // 检查文件类型
             const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'image/bmp', 'image/webp', 'image/tiff'];
             if (!allowedTypes.includes(file.type)) {
+                console.error('❌ 不支持的文件类型:', file.type);
                 alert(`不支持的文件类型: ${file.type}\n请选择有效的图片文件（PNG、JPG、JPEG、GIF、BMP、WebP、TIFF）`);
                 return;
             }
 
             // 检查文件大小（10MB限制）
             if (file.size > 10 * 1024 * 1024) {
+                console.error('❌ 文件大小超限:', file.size);
                 alert(`文件大小过大: ${(file.size / 1024 / 1024).toFixed(2)}MB\n请选择小于10MB的文件`);
                 return;
             }
 
-            console.log('文件验证通过，开始处理');
+            console.log('✅ 文件验证通过，开始处理');
             currentImageFile = file;
             showImagePreview(file);
 
             // 自动开始识别
+            console.log('⏰ 设置自动识别延时');
             setTimeout(() => {
+                console.log('🚀 开始自动OCR识别');
                 processImage();
             }, 800);
         }
@@ -673,6 +775,7 @@
         }
 
         function showPasteSuccess() {
+            console.log('✅ 显示粘贴成功提示');
             // 创建临时提示
             const uploadArea = document.getElementById('imageUploadArea');
             const originalContent = uploadArea.innerHTML;
@@ -681,8 +784,8 @@
                 <div class="upload-content">
                     <div class="upload-icon">✅</div>
                     <div class="upload-text">
-                        <p>图片粘贴成功！</p>
-                        <p class="upload-hint">正在处理...</p>
+                        <p><strong>图片粘贴成功！</strong></p>
+                        <p class="upload-hint">正在处理图片...</p>
                     </div>
                 </div>
             `;
@@ -693,18 +796,52 @@
             }, 2000);
         }
 
+        function showPasteHint() {
+            console.log('💡 显示粘贴提示');
+            // 创建临时提示
+            const uploadArea = document.getElementById('imageUploadArea');
+            const originalContent = uploadArea.innerHTML;
+
+            uploadArea.innerHTML = `
+                <div class="upload-content">
+                    <div class="upload-icon">📋</div>
+                    <div class="upload-text">
+                        <p><strong>未检测到图片</strong></p>
+                        <p class="upload-hint">请复制包含文字的图片后再粘贴</p>
+                        <p class="upload-hint" style="font-size: 12px; color: #666;">
+                            支持格式: PNG, JPG, JPEG, GIF, BMP, TIFF, WEBP
+                        </p>
+                    </div>
+                </div>
+            `;
+
+            // 3秒后恢复原内容
+            setTimeout(() => {
+                uploadArea.innerHTML = originalContent;
+            }, 3000);
+        }
+
         function processImage() {
-            console.log('开始处理图片');
+            console.log('🚀 开始处理图片');
 
             if (!currentImageFile) {
+                console.error('❌ 没有选择图片文件');
                 alert('请先选择图片');
                 return;
             }
+
+            console.log('📁 当前图片文件信息:', {
+                name: currentImageFile.name,
+                size: currentImageFile.size,
+                type: currentImageFile.type,
+                lastModified: currentImageFile.lastModified
+            });
 
             const ocrProgress = document.getElementById('ocrProgress');
             const ocrResult = document.getElementById('ocrResult');
 
             // 显示进度条
+            console.log('⏳ 显示OCR进度条');
             ocrProgress.style.display = 'block';
             ocrResult.style.display = 'none';
 
@@ -712,7 +849,7 @@
             const formData = new FormData();
             formData.append('image', currentImageFile);
 
-            console.log('发送OCR请求，文件大小:', currentImageFile.size);
+            console.log('📡 发送OCR请求，文件大小:', currentImageFile.size, 'bytes');
 
             // 发送OCR请求
             fetch('/ocr_process', {
@@ -972,6 +1109,10 @@
         document.addEventListener('DOMContentLoaded', function() {
             console.log('初始化智能表单填充功能');
             initImageUpload();
+
+            // 初始化KA看板功能 - 全新实现
+            console.log('🚀 初始化KA看板功能...');
+            initKanbanSystem();
         });
 
         // 模板选择功能
@@ -1287,96 +1428,267 @@
             });
         });
 
-        // KA看板功能
-        document.getElementById('btn-daike-inline').addEventListener('click', function() {
-            toggleExpiringCustomersBoard();
-        });
+        // ===== KA看板弹窗系统 - 全新实现 =====
 
-        async function toggleExpiringCustomersBoard() {
-            const board = document.getElementById('expiringCustomersBoard');
+        // 看板状态管理
+        const KanbanState = {
+            isVisible: false,
+            isLoading: false,
+            hasError: false,
+            data: null
+        };
 
-            if (board.style.display === 'none' || board.style.display === '') {
-                // 显示看板
-                try {
-                    console.log('正在获取到期客户数据...');
-                    const response = await fetch('/get_expiring_customers');
+        // 初始化看板系统
+        function initKanbanSystem() {
+            console.log('🎯 初始化KA看板弹窗系统...');
 
-                    console.log('响应状态:', response.status);
-                    console.log('响应URL:', response.url);
+            // 查找并绑定按钮
+            const kanbanButton = document.getElementById('btn-daike-inline');
+            const kanbanModal = document.getElementById('kanban-modal');
 
-                    // 检查是否被重定向到登录页面
-                    if (response.url.includes('/login')) {
-                        alert('请先登录系统');
-                        window.location.href = '/login';
-                        return;
-                    }
+            // 验证必要元素
+            if (!kanbanButton) {
+                console.error('❌ 看板按钮未找到: btn-daike-inline');
+                return false;
+            }
 
-                    if (response.ok) {
-                        const data = await response.json();
-                        console.log('获取到的数据:', data);
-                        displayExpiringCustomers(data.expiring_customers, data.title, data.count, data.message);
-                        board.style.display = 'block';
-                    } else {
-                        const errorText = await response.text();
-                        console.error('API错误响应:', errorText);
-                        alert('获取到期客户数据失败: ' + response.status);
-                    }
-                } catch (error) {
-                    console.error('获取到期客户数据失败:', error);
-                    alert('获取到期客户数据失败: ' + error.message);
-                }
-            } else {
-                // 隐藏看板
-                board.style.display = 'none';
+            if (!kanbanModal) {
+                console.error('❌ 看板弹窗未找到: kanban-modal');
+                return false;
+            }
+
+            console.log('✅ 看板元素验证通过');
+
+            // 绑定事件
+            kanbanButton.addEventListener('click', function(e) {
+                e.preventDefault();
+                console.log('🖱️ 看板按钮被点击');
+                openKanbanModal();
+            });
+
+            console.log('✅ 看板事件绑定完成');
+            return true;
+        }
+
+        // 打开看板弹窗
+        async function openKanbanModal() {
+            console.log('🚀 打开看板弹窗...');
+
+            const kanbanModal = document.getElementById('kanban-modal');
+            const button = document.getElementById('btn-daike-inline');
+
+            // 更新状态
+            KanbanState.isVisible = true;
+            KanbanState.isLoading = true;
+
+            // 显示弹窗
+            kanbanModal.style.display = 'flex';
+            console.log('✅ 看板弹窗已显示');
+
+            // 更新按钮状态
+            const originalText = button.textContent;
+            button.textContent = '加载中...';
+            button.disabled = true;
+
+            // 显示加载状态
+            updateKanbanStatus('加载中');
+            showKanbanLoading();
+
+            try {
+                // 加载数据
+                console.log('📡 开始加载数据...');
+                const data = await loadKanbanData();
+
+                // 显示数据
+                console.log('🎨 渲染看板内容...');
+                renderKanbanContent(data);
+
+                // 更新状态
+                KanbanState.isLoading = false;
+                KanbanState.hasError = false;
+                KanbanState.data = data;
+
+                updateKanbanStatus('已加载');
+                console.log('🎉 看板显示完成');
+
+            } catch (error) {
+                console.error('❌ 看板加载失败:', error);
+
+                KanbanState.isLoading = false;
+                KanbanState.hasError = true;
+
+                updateKanbanStatus('加载失败');
+                showKanbanError('数据加载失败', error.message);
+
+            } finally {
+                // 恢复按钮状态
+                button.textContent = originalText;
+                button.disabled = false;
             }
         }
 
-        function displayExpiringCustomers(customers, title, count, message) {
-            const listContainer = document.getElementById('expiringCustomersList');
-            const boardTitle = document.querySelector('.customer-board-box h4');
+        // 关闭看板弹窗
+        function closeKanbanModal() {
+            console.log('📴 关闭看板弹窗');
 
-            // 更新看板标题 - 使用后端提供的用户友好标题
-            if (title) {
-                boardTitle.textContent = title;
+            const kanbanModal = document.getElementById('kanban-modal');
+            kanbanModal.style.display = 'none';
+
+            // 更新状态
+            KanbanState.isVisible = false;
+
+            console.log('✅ 看板弹窗已关闭');
+        }
+
+        // 加载看板数据
+        async function loadKanbanData() {
+            console.log('📡 发送API请求...');
+
+            const response = await fetch('/get_expiring_customers');
+
+            console.log('📥 收到响应:', {
+                status: response.status,
+                url: response.url,
+                ok: response.ok
+            });
+
+            // 检查登录状态
+            if (response.url.includes('/login')) {
+                console.warn('⚠️ 需要重新登录');
+                throw new Error('登录已过期，请重新登录');
             }
 
-            // 如果有特殊消息（如周末提示或无客户提示），显示消息
-            if (message) {
-                listContainer.innerHTML = `<div class="friendly-message">${message}</div>`;
-                return;
+            if (!response.ok) {
+                throw new Error(`API请求失败: HTTP ${response.status}`);
             }
 
-            if (!customers || customers.length === 0) {
-                listContainer.innerHTML = '<div class="no-customers">今日无客户到期，可以专注其他工作</div>';
-                return;
+            const data = await response.json();
+            console.log('✅ 数据获取成功:', data);
+
+            return data;
+        }
+
+        // 渲染看板内容
+        function renderKanbanContent(data) {
+            console.log('🎨 渲染看板内容:', data);
+
+            const kanbanContent = document.getElementById('kanban-content');
+            const titleElement = document.getElementById('kanban-title-text');
+
+            // 更新标题
+            if (data.title) {
+                titleElement.textContent = data.title;
             }
+
+            // 渲染内容
+            if (data.message) {
+                // 显示特殊消息
+                kanbanContent.innerHTML = createMessageHTML(data.message, 'success');
+                console.log('✅ 显示消息:', data.message);
+            } else if (!data.expiring_customers || data.expiring_customers.length === 0) {
+                // 显示无数据状态
+                kanbanContent.innerHTML = createMessageHTML('今日无客户到期，可以专注其他工作', 'info');
+                console.log('✅ 显示空状态');
+            } else {
+                // 显示客户列表
+                kanbanContent.innerHTML = createCustomerListHTML(data.expiring_customers);
+                console.log(`✅ 显示 ${data.expiring_customers.length} 个客户`);
+            }
+        }
+
+        // 创建消息HTML
+        function createMessageHTML(message, type = 'info') {
+            const icons = {
+                success: '🎉',
+                info: '📅',
+                error: '❌'
+            };
+
+            return `
+                <div class="kanban-message ${type}">
+                    <div class="message-icon">${icons[type] || '📋'}</div>
+                    <div class="message-title">系统提示</div>
+                    <div class="message-text">${message}</div>
+                </div>
+            `;
+        }
+
+        // 创建客户列表HTML
+        function createCustomerListHTML(customers) {
+            console.log(`🔄 开始渲染 ${customers.length} 个客户`);
 
             let html = '';
             customers.forEach((customer, index) => {
-                // 确保数据安全显示，避免undefined和其他技术错误信息
-                const expiryDate = (customer.expiry_date && customer.expiry_date !== 'undefined' && customer.expiry_date !== 'null') ? customer.expiry_date : '日期待确认';
-                const userId = (customer.user_id && customer.user_id !== 'undefined' && customer.user_id !== 'null' && customer.user_id !== '未指定') ? customer.user_id : '信息待完善';
-                const renewalSales = (customer.renewal_sales && customer.renewal_sales !== 'undefined' && customer.renewal_sales !== 'null' && customer.renewal_sales !== '未指定') ? customer.renewal_sales : '待分配';
+                const expiryDate = cleanValue(customer.expiry_date, '日期待确认');
+                const userId = cleanValue(customer.user_id, '信息待完善');
+                const renewalSales = cleanValue(customer.renewal_sales, '待分配');
+
+                console.log(`📋 客户 ${index + 1}:`, { expiryDate, userId, renewalSales });
 
                 html += `
-                    <div class="customer-item" data-index="${index}">
-                        <div class="customer-field">
-                            <div class="customer-field-label">到期时间</div>
-                            <div class="customer-field-value expiry-date">${expiryDate}</div>
-                        </div>
-                        <div class="customer-field">
-                            <div class="customer-field-label">用户ID</div>
-                            <div class="customer-field-value user-id">${userId}</div>
-                        </div>
-                        <div class="customer-field">
-                            <div class="customer-field-label">责任销售</div>
-                            <div class="customer-field-value sales-person">${renewalSales}</div>
+                    <div class="customer-card" data-index="${index}">
+                        <div class="customer-info">
+                            <div class="customer-field">
+                                <div class="customer-field-label">到期时间</div>
+                                <div class="customer-field-value">${expiryDate}</div>
+                            </div>
+                            <div class="customer-field">
+                                <div class="customer-field-label">用户ID</div>
+                                <div class="customer-field-value">${userId}</div>
+                            </div>
+                            <div class="customer-field">
+                                <div class="customer-field-label">责任销售</div>
+                                <div class="customer-field-value">${renewalSales}</div>
+                            </div>
                         </div>
                     </div>
                 `;
             });
 
-            listContainer.innerHTML = html;
+            return html;
+        }
+
+        // 显示加载状态
+        function showKanbanLoading() {
+            const kanbanContent = document.getElementById('kanban-content');
+            kanbanContent.innerHTML = `
+                <div class="kanban-loading">
+                    <div class="loading-spinner"></div>
+                    <div class="loading-text">正在加载客户数据...</div>
+                </div>
+            `;
+        }
+
+        // 显示错误状态
+        function showKanbanError(title, message) {
+            const kanbanContent = document.getElementById('kanban-content');
+            kanbanContent.innerHTML = `
+                <div class="kanban-message error">
+                    <div class="message-icon">❌</div>
+                    <div class="message-title">${title}</div>
+                    <div class="message-text">${message}</div>
+                </div>
+            `;
+        }
+
+        // 更新看板状态
+        function updateKanbanStatus(status) {
+            const statusElement = document.getElementById('kanban-status');
+            if (statusElement) {
+                statusElement.textContent = status;
+            }
+        }
+
+        // 数据清理辅助函数
+        function cleanValue(value, defaultValue) {
+            if (!value ||
+                value === 'undefined' ||
+                value === 'null' ||
+                value === '未指定' ||
+                value.toString().trim() === '') {
+                return defaultValue;
+            }
+            return value.toString().trim();
         }
 
         // 初始化
